@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/tvCurrentLoc"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="24dp"
+        android:fontFamily="@font/pretendard_regular"
+        android:text="현재 위치 주소"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvTmp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="108dp"
+        android:layout_marginTop="60dp"
+        android:fontFamily="@font/pretendard_black"
+        android:text="11 °C"
+        android:textSize="60sp"
+        app:layout_constraintStart_toStartOf="@+id/tvCurrentLoc"
+        app:layout_constraintTop_toBottomOf="@+id/tvCurrentLoc" />
+
+    <TextView
+        android:id="@+id/tvRainPer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="40dp"
+        android:fontFamily="@font/pretendard_regular"
+        android:text="강수확률 : 70%"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="@+id/tvCurrentLoc"
+        app:layout_constraintTop_toBottomOf="@+id/tvTmp" />
+
+    <TextView
+        android:id="@+id/tvDust"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="64dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/pretendard_medium"
+        android:text="미세먼지 좋음/보통/나쁨"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="@+id/tvCurrentLoc"
+        app:layout_constraintTop_toBottomOf="@+id/tvRainPer" />
+
+    <TextView
+        android:id="@+id/tvOther"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="64dp"
+        android:fontFamily="@font/pretendard_regular"
+        android:text="다른 위치"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="@+id/tvCurrentLoc"
+        app:layout_constraintTop_toBottomOf="@+id/tvDust" />
+
+    <EditText
+        android:id="@+id/etOtherLoc"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="56dp"
+        android:ems="10"
+        android:fontFamily="@font/pretendard_regular"
+        android:hint="원하는 위치의 주소를 입력해주세요."
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="@+id/tvCurrentLoc"
+        app:layout_constraintStart_toEndOf="@+id/tvOther"
+        app:layout_constraintTop_toBottomOf="@+id/tvDust" />
+
+    <Button
+        android:id="@+id/btnStart"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:height="100dp"
+        android:backgroundTint="#42A5F5"
+        android:fontFamily="@font/pretendard_extrabold"
+        android:text="🍽 오늘 같은 날엔? 🍽 "
+        android:textSize="30sp"
+        app:cornerRadius="80px"
+        app:layout_constraintEnd_toEndOf="@+id/tvCurrentLoc"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/tvCurrentLoc"
+        app:layout_constraintTop_toBottomOf="@+id/etOtherLoc" />
+
+    <Button
+        android:id="@+id/btnOK"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="#90CAF9"
+        android:fontFamily="@font/pretendard_extrabold"
+        android:text="OK"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="@+id/etOtherLoc"
+        app:layout_constraintTop_toBottomOf="@+id/etOtherLoc" />
+</androidx.constraintlayout.widget.ConstraintLayout>
