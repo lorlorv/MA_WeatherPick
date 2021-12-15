@@ -3,4 +3,17 @@
     <!--menu -앱 종료-->
     <string name="dialog_exit">종료</string>
     <string name="dialog_cancel">취소</string>
+
+    <!-- map -->
+    <string name="api_key">AIzaSyBtKo4aAEKeI4hLmt5ZuO7l0CT8d4YPuno</string>
+    <string name="init_lat">37.604094</string>
+    <string name="init_lng">127.042463</string>
+
+    <!-- geoCoding -->
+    <string name="hello_world">Hello world!</string>
+    <string name="no_address_found">주소를 찾을 수 없습니다.</string>
+    <string name="address_found">주소를 찾았습니다.</string>
+
+
+    <!-- MainActivity -->
 </resources>

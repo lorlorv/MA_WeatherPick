@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ddwu.mobile.finalproject.ma02_20190995">
 
+    <!-- 위치조사 필요 Permission -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -9,6 +11,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Ma02_20190995">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/api_key" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -18,6 +25,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".FetchAddressIntentService"
+            android:exported="false"/>
+        <service
+            android:name=".FetchLatLngIntentService"
+            android:exported="false"/>
     </application>
 
 </manifest>
