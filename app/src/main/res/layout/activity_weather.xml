@@ -5,101 +5,107 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
+    <TextView
+        android:id="@+id/tvTemperature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="48dp"
+        android:fontFamily="@font/pretendard_black"
+        android:text="℃"
+        android:textSize="60sp"
+        app:layout_constraintStart_toEndOf="@+id/tvTmp"
+        app:layout_constraintTop_toBottomOf="@+id/tvCurrentLoc" />
+
     <TextView
         android:id="@+id/tvCurrentLoc"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="35dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="60dp"
+        android:layout_marginEnd="16dp"
         android:fontFamily="@font/pretendard_regular"
         android:text="현재 위치 주소"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvTmp"
-        app:layout_constraintStart_toStartOf="@+id/tvCurrentLoc"
-        app:layout_constraintTop_toBottomOf="@+id/tvCurrentLoc"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="48dp"
         android:fontFamily="@font/pretendard_black"
-        android:text="11 °C"
+        android:text="11"
         android:textSize="60sp"
-        tools:layout_editor_absoluteX="134dp"
-        tools:layout_editor_absoluteY="90dp" />
+        app:layout_constraintStart_toStartOf="@+id/tvCurrentLoc"
+        app:layout_constraintTop_toBottomOf="@+id/tvCurrentLoc" />
 
     <TextView
-        android:id="@+id/tvRainPer"
-        app:layout_constraintStart_toStartOf="@+id/tvCurrentLoc"
-        app:layout_constraintTop_toBottomOf="@+id/tvTmp"
+        android:id="@+id/tvWeather"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:fontFamily="@font/pretendard_regular"
-        android:text="강수확률 : 70%"
+        android:text="비"
         android:textSize="24sp"
-        tools:layout_editor_absoluteX="132dp"
-        tools:layout_editor_absoluteY="211dp" />
+        app:layout_constraintStart_toEndOf="@+id/tvW3"
+        app:layout_constraintTop_toTopOf="@+id/tvW3" />
 
     <TextView
-        android:id="@+id/tvDust"
-        app:layout_constraintStart_toStartOf="@+id/tvCurrentLoc"
-        app:layout_constraintTop_toBottomOf="@+id/tvRainPer"
+        android:id="@+id/tvW4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="32dp"
         android:fontFamily="@font/pretendard_medium"
-        android:text="미세먼지 좋음/보통/나쁨"
+        android:text="미세먼지"
         android:textSize="24sp"
-        tools:layout_editor_absoluteX="91dp"
-        tools:layout_editor_absoluteY="266dp" />
-
-
+        app:layout_constraintStart_toStartOf="@+id/tvCurrentLoc"
+        app:layout_constraintTop_toBottomOf="@+id/tvW3" />
 
     <Button
         android:id="@+id/btnStart"
-        app:cornerRadius="80px"
-        app:layout_constraintEnd_toEndOf="@+id/tvCurrentLoc"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/tvCurrentLoc"
-        app:layout_constraintTop_toBottomOf="@+id/etOtherLoc"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="316dp"
+        android:layout_marginEnd="32dp"
         android:height="100dp"
         android:backgroundTint="#42A5F5"
         android:fontFamily="@font/pretendard_extrabold"
         android:text="🍽 오늘 같은 날엔? 🍽 "
-        android:textSize="30sp"
-        tools:layout_editor_absoluteX="35dp"
-        tools:layout_editor_absoluteY="505dp" />
-
-    <Button
-        android:id="@+id/btnOtherLoc"
-        app:layout_constraintEnd_toEndOf="@+id/etOtherLoc"
-        app:layout_constraintTop_toBottomOf="@+id/etOtherLoc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="#90CAF9"
-        android:fontFamily="@font/pretendard_extrabold"
-        android:onClick="onClick"
-        android:text="OK"
-        android:textSize="20sp"
-        tools:layout_editor_absoluteX="293dp"
-        tools:layout_editor_absoluteY="341dp" />
-
-    <Button
-        android:id="@+id/btnCurLoc"
+        android:textSize="24sp"
+        app:cornerRadius="80px"
         app:layout_constraintEnd_toEndOf="@+id/tvCurrentLoc"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/tvCurrentLoc"
-        app:layout_constraintTop_toBottomOf="@+id/tvCurrentLoc"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvCurrentLoc" />
+
+    <TextView
+        android:id="@+id/tvDust"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="#C9E7FF"
-        android:onClick="onClick"
-        android:text="🚩"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="좋음/보통/나쁨/매우나쁨"
+        android:textSize="16sp"
+        app:layout_constraintStart_toEndOf="@+id/tvW4"
+        app:layout_constraintTop_toTopOf="@+id/tvW4" />
+
+    <TextView
+        android:id="@+id/tvW3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="188dp"
+        android:text="오늘의 날씨"
         android:textSize="24sp"
-        tools:layout_editor_absoluteX="250dp"
-        tools:layout_editor_absoluteY="389dp" />
+        app:layout_constraintStart_toStartOf="@+id/tvCurrentLoc"
+        app:layout_constraintTop_toBottomOf="@+id/tvCurrentLoc" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private EditText etOtherLoc;
     private double currentLat;
     private double currentLng;
+    private String currentAddress;
     private MarkerOptions markerOptions;
 
     private int clickedButton; /*버튼을 눌렀을 때 권한요청으로 실행이 넘어갈 경우를 대비해 클릭한 버튼 기억*/
@@ -85,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Intent intent = new Intent(this, WeatherActivity.class);
                 intent.putExtra("currentLat", currentLat);
                 intent.putExtra("currentLng", currentLng);
+                intent.putExtra("currentAddr", currentAddress);
                 startActivity(intent);
         }
 
@@ -223,6 +225,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 addressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
                 if (addressOutput == null) addressOutput = "";
             }
+                currentAddress = addressOutput;
                 tvCurrentAddr.setText(addressOutput);
             }
         }
