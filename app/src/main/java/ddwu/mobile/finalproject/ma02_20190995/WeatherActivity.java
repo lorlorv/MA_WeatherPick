@@ -13,12 +13,16 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 
 public class WeatherActivity extends AppCompatActivity {
     /*UI*/
     TextView tvCurrentLoc;
     TextView tvTemp;
     TextView tvWeather;
+
+    double lat;
+    double lng;
 
     /*parser*/
     String apiAddress;
@@ -27,6 +31,7 @@ public class WeatherActivity extends AppCompatActivity {
     WeatherXMLParser weatherXMLParser;
     WeatherNetworkManager networkManager;
     WeatherDto dto;
+    HashMap<String,Double> resultMap;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,14 +39,18 @@ public class WeatherActivity extends AppCompatActivity {
 
         tvCurrentLoc = findViewById(R.id.tvCurrentLoc);
         tvTemp = findViewById(R.id.tvTmp);
+        tvWeather = findViewById(R.id.tvWeather);
 
         Intent intent = getIntent();
         String address = intent.getStringExtra("currentAddr");
+        lat = intent.getDoubleExtra("currentLat", 0);
+        lng = intent.getDoubleExtra("currentLng", 0);
         tvCurrentLoc.setText(address);
 
         apiAddress = getResources().getString(R.string.api_url);
         apiKey = getResources().getString(R.string.api_key);
 
+        resultMap = new HashMap<>();
         networkManager = new WeatherNetworkManager(this);
         try {
             WeatherInfo();
@@ -56,33 +65,30 @@ public class WeatherActivity extends AppCompatActivity {
         long today = System.currentTimeMillis();
         Date todayDate = new Date(today);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
-        String base_date = simpleDateFormat.format(todayDate);
 
+        String base_date = simpleDateFormat.format(todayDate);
         String base_time = "0800";
 
-        String nx = "60";
-        String ny = "126";
+        GpsTransfer gpsTransfer = new GpsTransfer();
+        gpsTransfer.setLat(lat);
+        gpsTransfer.setLng(lng);
+        gpsTransfer.transfer(gpsTransfer, 0);
+        String nx = String.valueOf((int)gpsTransfer.getxLat());
+        String ny = String.valueOf((int)gpsTransfer.getyLng());
 
-        String key = "serviceKey=" + apiKey;
-        query = "&numOfRows=10&pageNo=1" + "&"
-                + "base_date=" + base_date + "&"
-                + "base_time=" + base_time + "&"
-                + "nx=" + nx + "&"
-                + "ny=" + ny;
-
-        StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst"); /*URL*/
+        StringBuilder urlBuilder = new StringBuilder(getResources().getString(R.string.api_url)); /*URL*/
         try {
-            urlBuilder.append("?" + URLEncoder.encode("serviceKey","UTF-8") + "=lCXnaymyq9YqELE3gY3QPZrG2ZC4LxwL4ai0cnaxQ71ya9LYKqjby%2FeUSTUS9QN2QJ4T0lH5oio%2FDrNlJ95yTA%3D%3D"); /*Service Key*/
+            urlBuilder.append("?" + URLEncoder.encode("serviceKey","UTF-8") + "=" + getResources().getString(R.string.open_api_key)); /*Service Key*/
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         urlBuilder.append("&" + URLEncoder.encode("pageNo","UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지번호*/
-        urlBuilder.append("&" + URLEncoder.encode("numOfRows","UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*한 페이지 결과 수*/
+        urlBuilder.append("&" + URLEncoder.encode("numOfRows","UTF-8") + "=" + URLEncoder.encode("9", "UTF-8")); /*한 페이지 결과 수*/
         urlBuilder.append("&" + URLEncoder.encode("dataType","UTF-8") + "=" + URLEncoder.encode("XML", "UTF-8")); /*요청자료형식(XML/JSON) Default: XML*/
         urlBuilder.append("&" + URLEncoder.encode("base_date","UTF-8") + "=" + URLEncoder.encode("20211218", "UTF-8")); /*‘21년 6월 28일 발표*/
-        urlBuilder.append("&" + URLEncoder.encode("base_time","UTF-8") + "=" + URLEncoder.encode("0800", "UTF-8")); /*06시 발표(정시단위) */
-        urlBuilder.append("&" + URLEncoder.encode("nx","UTF-8") + "=" + URLEncoder.encode("55", "UTF-8")); /*예보지점의 X 좌표값*/
-        urlBuilder.append("&" + URLEncoder.encode("ny","UTF-8") + "=" + URLEncoder.encode("127", "UTF-8")); /*예보지점의 Y 좌표값*/
+        urlBuilder.append("&" + URLEncoder.encode("base_time","UTF-8") + "=" + URLEncoder.encode("2300", "UTF-8")); /*06시 발표(정시단위) */
+        urlBuilder.append("&" + URLEncoder.encode("nx","UTF-8") + "=" + URLEncoder.encode(nx, "UTF-8")); /*예보지점의 X 좌표값*/
+        urlBuilder.append("&" + URLEncoder.encode("ny","UTF-8") + "=" + URLEncoder.encode(ny, "UTF-8")); /*예보지점의 Y 좌표값*/
 
         new NetworkAsyncTask().execute(String.valueOf(urlBuilder));
     }
@@ -118,11 +124,31 @@ public class WeatherActivity extends AppCompatActivity {
             if(weatherXMLParser.parse(result) == null){
                 Log.d("WeatherActivity", "result 없음!");
             }
-            dto = weatherXMLParser.parse(result);
-            if(dto.getFcstValue() == null)
+            resultMap = weatherXMLParser.parse(result);
+            if(resultMap.get("TMP") == null)
                 Log.d("WeatherActivity", "값 없음!");
             else
-                tvTemp.setText(dto.getFcstValue().toString());
+                tvTemp.setText(resultMap.get("TMP").toString());
+
+            String weatherType = "";
+            switch(resultMap.get("PTY").intValue()){
+                case 1:
+                    weatherType = "비";
+                    break;
+                    case 2:
+                        weatherType = "비/눈";
+                        break;
+                        case 3:
+                            weatherType = "눈";
+                            break;
+                case 4:
+                    weatherType = "소나기";
+                    break;
+                default:
+                    weatherType = "맑음";
+                    break;
+            }
+            tvWeather.setText(weatherType);
             }
         }
 }

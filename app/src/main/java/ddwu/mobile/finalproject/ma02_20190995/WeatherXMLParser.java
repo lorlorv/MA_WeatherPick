@@ -1,11 +1,10 @@
 package ddwu.mobile.finalproject.ma02_20190995;
 
-import android.util.Log;
-
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.StringReader;
+import java.util.HashMap;
 
 public class WeatherXMLParser {
 
@@ -17,8 +16,10 @@ public class WeatherXMLParser {
 
     public WeatherXMLParser(){}
 
-    public WeatherDto parse(String xml){
+    public HashMap<String, Double> parse(String xml){
         WeatherDto dto = null;
+        HashMap<String, Double> resultMap = new HashMap();
+        boolean flag = false;
 
         TagType tagType = TagType.NONE;
 
@@ -46,19 +47,23 @@ public class WeatherXMLParser {
                         break;
                     case XmlPullParser.END_TAG:
                         if (parser.getName().equals(TAG_ITEM)) {
-//                            dto = null;
+                            resultMap.put(dto.getCategory(), dto.getFcstValue());
+//                            Log.d("xml parser", resultMap.get(dto.getCategory()) + " : " + dto.getFcstValue());
+                            dto = null;
                         }
                         break;
                     case XmlPullParser.TEXT:
                         switch (tagType) {
                             case CATEGORY:
-
+                                if(parser.getText().equals("TMP") || parser.getText().equals("PTY")) {
                                     dto.setCategory(parser.getText());
+                                    flag = true;
+                                }
                                 break;
                             case FCSTVALUE:
+                                if(flag)
+                                    dto.setFcstValue(Double.parseDouble(parser.getText()));
 
-                                    dto.setFcstValue(Double.parseDouble((parser.getText())));
-                                Log.d("xml parser", String.valueOf(dto.getFcstValue()));
                                 break;
                         }
                         tagType = TagType.NONE;
@@ -69,6 +74,6 @@ public class WeatherXMLParser {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return dto;
+        return resultMap;
     }
 }

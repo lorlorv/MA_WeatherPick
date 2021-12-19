@@ -6,6 +6,7 @@ public class WeatherDto {
     private String category;
     private Double fcstValue;
 
+
     public int get_id() {
         return _id;
     }
@@ -29,4 +30,6 @@ public class WeatherDto {
     public void setFcstValue(Double fcstValue) {
         this.fcstValue = fcstValue;
     }
+
+
 }

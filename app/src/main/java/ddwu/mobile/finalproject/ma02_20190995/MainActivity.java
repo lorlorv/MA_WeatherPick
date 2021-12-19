@@ -83,11 +83,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 break;
 
             case R.id.btnSelectLoc:
-                Intent intent = new Intent(this, WeatherActivity.class);
-                intent.putExtra("currentLat", currentLat);
-                intent.putExtra("currentLng", currentLng);
-                intent.putExtra("currentAddr", currentAddress);
-                startActivity(intent);
+                if(!tvCurrentAddr.getText().toString().equals("")) {
+                    Intent intent = new Intent(this, WeatherActivity.class);
+                    intent.putExtra("currentLat", currentLat);
+                    intent.putExtra("currentLng", currentLng);
+                    intent.putExtra("currentAddr", currentAddress);
+                    startActivity(intent);
+                }
+                else
+                    Toast.makeText(this, "현재위치를 설정해주세요!", Toast.LENGTH_SHORT).show();
         }
 
     }
