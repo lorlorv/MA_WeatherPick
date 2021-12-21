@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -22,9 +23,15 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.FetchPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
 
+import java.util.Arrays;
 import java.util.List;
 
 import noman.googleplaces.NRPlaces;
@@ -96,13 +103,13 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
                         Toast.LENGTH_SHORT).show();
             }
         });
-//        mGoogleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-//            @Override
-//            public void onInfoWindowClick(Marker marker) {
-//                String placeId = marker.getTag().toString();
-//                getPlaceDetail(placeId);
-//            }
-//        });
+        mGoogleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                String placeId = marker.getTag().toString();
+                getPlaceDetail(placeId);
+            }
+        });
     }
 
     /*구글맵을 멤버변수로 로딩*/
@@ -184,29 +191,49 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
     };
 
     /*Place ID 의 장소에 대한 세부정보 획득*/
-//    private void getPlaceDetail(String placeId) {
-//        List<Place.Field> placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME,
-//                Place.Field.PHONE_NUMBER, Place.Field.ADDRESS);
-//
-//        FetchPlaceRequest request = FetchPlaceRequest.builder(placeId, placeFields).build();
-//
-//        placesClient.fetchPlace(request).addOnSuccessListener(new OnSuccessListener<FetchPlaceResponse>() {
-//            @Override
-//            public void onSuccess(FetchPlaceResponse response) {
-//                Place place = response.getPlace();
-//                callDetailActivity(place);
-//            }
-//        }).addOnFailureListener(new OnFailureListener() {
-//            @Override
-//            public void onFailure(@NonNull Exception e) {
-//                if(e instanceof ApiException){
-//                    ApiException apiException = (ApiException) e;
-//                    int statusCode = apiException.getStatusCode();
-//                    Log.e(TAG, "Place not found: " + statusCode + " " + e.getMessage());
-//                }
-//            }
-//        });
-//    }
+    private void getPlaceDetail(String placeId) {
+        List<Place.Field> placeFields = Arrays.asList(Place.Field.ID,
+                Place.Field.NAME, Place.Field.OPENING_HOURS,
+                Place.Field.PHONE_NUMBER, Place.Field.ADDRESS,
+                Place.Field.RATING, Place.Field.USER_RATINGS_TOTAL, Place.Field.WEBSITE_URI);
+
+        FetchPlaceRequest request = FetchPlaceRequest.builder(placeId, placeFields).build();
+
+        placesClient.fetchPlace(request).addOnSuccessListener(new OnSuccessListener<FetchPlaceResponse>() {
+            @Override
+            public void onSuccess(FetchPlaceResponse response) {
+                Place place = response.getPlace();
+                callDetailActivity(place);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                if(e instanceof ApiException){
+                    ApiException apiException = (ApiException) e;
+                    int statusCode = apiException.getStatusCode();
+                    Log.e(TAG, "Place not found: " + statusCode + " " + e.getMessage());
+                }
+            }
+        });
+    }
+
+    private void callDetailActivity(Place place) {
+        Intent intent = new Intent(PlaceActivity.this, DetailActivity.class);
+        intent.putExtra("id", place.getId()) //photo 가져오기 위함
+                .putExtra("name",place.getName())
+                .putExtra("address",place.getAddress())
+                .putExtra("phone",place.getPhoneNumber())
+                .putExtra("isOpen", place.isOpen())
+                .putExtra("opening_hours", place.getOpeningHours())
+                .putExtra("rating", place.getRating())
+                .putExtra("user_rating", place.getUserRatingsTotal())
+                .putExtra("website", place.getWebsiteUri());
+
+        startActivity(intent);
+    }
+
+
 
 
 }
+

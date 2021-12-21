@@ -42,6 +42,7 @@
         <activity android:name=".WeatherActivity"/>
         <activity android:name=".PickActivity"/>
         <activity android:name=".PlaceActivity"/>
+        <activity android:name=".DetailActivity"/>
     </application>
 
 </manifest>
