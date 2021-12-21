@@ -5,9 +5,12 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.maps.model.LatLng;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -21,13 +24,15 @@ public class WeatherActivity extends AppCompatActivity {
     TextView tvTemp;
     TextView tvWeather;
 
-    double lat;
-    double lng;
+    /*버튼을 눌렀을 때 권한요청으로 실행이 넘어갈 경우를 대비해 클릭한 버튼 기억*/
+    private int clickedButton;
+
+    /*location data*/
+    LatLng currentLoc;
 
     /*parser*/
     String apiAddress;
     String apiKey;
-    String query;
     WeatherXMLParser weatherXMLParser;
     WeatherNetworkManager networkManager;
     WeatherDto dto;
@@ -43,8 +48,7 @@ public class WeatherActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         String address = intent.getStringExtra("currentAddr");
-        lat = intent.getDoubleExtra("currentLat", 0);
-        lng = intent.getDoubleExtra("currentLng", 0);
+        currentLoc = intent.getExtras().getParcelable("currentLoc");
         tvCurrentLoc.setText(address);
 
         apiAddress = getResources().getString(R.string.api_url);
@@ -70,8 +74,8 @@ public class WeatherActivity extends AppCompatActivity {
         String base_time = "0800";
 
         GpsTransfer gpsTransfer = new GpsTransfer();
-        gpsTransfer.setLat(lat);
-        gpsTransfer.setLng(lng);
+        gpsTransfer.setLat(currentLoc.latitude);
+        gpsTransfer.setLng(currentLoc.longitude);
         gpsTransfer.transfer(gpsTransfer, 0);
         String nx = String.valueOf((int)gpsTransfer.getxLat());
         String ny = String.valueOf((int)gpsTransfer.getyLng());
@@ -85,8 +89,8 @@ public class WeatherActivity extends AppCompatActivity {
         urlBuilder.append("&" + URLEncoder.encode("pageNo","UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지번호*/
         urlBuilder.append("&" + URLEncoder.encode("numOfRows","UTF-8") + "=" + URLEncoder.encode("9", "UTF-8")); /*한 페이지 결과 수*/
         urlBuilder.append("&" + URLEncoder.encode("dataType","UTF-8") + "=" + URLEncoder.encode("XML", "UTF-8")); /*요청자료형식(XML/JSON) Default: XML*/
-        urlBuilder.append("&" + URLEncoder.encode("base_date","UTF-8") + "=" + URLEncoder.encode("20211218", "UTF-8")); /*‘21년 6월 28일 발표*/
-        urlBuilder.append("&" + URLEncoder.encode("base_time","UTF-8") + "=" + URLEncoder.encode("2300", "UTF-8")); /*06시 발표(정시단위) */
+        urlBuilder.append("&" + URLEncoder.encode("base_date","UTF-8") + "=" + URLEncoder.encode(base_date, "UTF-8")); /* 오늘 날짜 발표 */
+        urlBuilder.append("&" + URLEncoder.encode("base_time","UTF-8") + "=" + URLEncoder.encode(base_time, "UTF-8")); /*06시 발표(정시단위) */
         urlBuilder.append("&" + URLEncoder.encode("nx","UTF-8") + "=" + URLEncoder.encode(nx, "UTF-8")); /*예보지점의 X 좌표값*/
         urlBuilder.append("&" + URLEncoder.encode("ny","UTF-8") + "=" + URLEncoder.encode(ny, "UTF-8")); /*예보지점의 Y 좌표값*/
 
@@ -151,4 +155,16 @@ public class WeatherActivity extends AppCompatActivity {
             tvWeather.setText(weatherType);
             }
         }
+
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btnStart:
+                clickedButton = R.id.btnStart;
+                Intent intent = new Intent(this, PickActivity.class);
+                intent.putExtra("resultMap", resultMap);
+                intent.putExtra("currentLoc", currentLoc);
+                startActivity(intent);
+        }
+
+    }
 }

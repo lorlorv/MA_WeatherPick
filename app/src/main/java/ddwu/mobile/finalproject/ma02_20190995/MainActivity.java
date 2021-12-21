@@ -38,13 +38,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     /*Layout*/
     private TextView tvCurrentAddr;
     private EditText etOtherLoc;
-    private double currentLat;
-    private double currentLng;
+    private LatLng currentLoc;
     private String currentAddress;
     private MarkerOptions markerOptions;
 
     private int clickedButton; /*버튼을 눌렀을 때 권한요청으로 실행이 넘어갈 경우를 대비해 클릭한 버튼 기억*/
-
 
     /*GoogleMap*/
     private GoogleMap mGoogleMap;
@@ -69,7 +67,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         bestProvider = LocationManager.GPS_PROVIDER;
         mapLoad();
 
-
         //IntentService가 생성하는 결과 수신용 ResultReceiver
         addressResultReceiver = new AddressResultReceiver(new Handler());
         latLngResultReceiver = new LatLngResultReceiver(new Handler());
@@ -85,8 +82,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             case R.id.btnSelectLoc:
                 if(!tvCurrentAddr.getText().toString().equals("")) {
                     Intent intent = new Intent(this, WeatherActivity.class);
-                    intent.putExtra("currentLat", currentLat);
-                    intent.putExtra("currentLng", currentLng);
+                    intent.putExtra("currentLoc", currentLoc);
                     intent.putExtra("currentAddr", currentAddress);
                     startActivity(intent);
                 }
@@ -196,8 +192,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     /* 위도/경도 → 주소 변환 IntentService 실행 */
     private void startAddressService(double latitude, double longitude) {
         Intent intent = new Intent(this, FetchAddressIntentService.class);
-        currentLat = latitude;
-        currentLng = longitude;
+        currentLoc = new LatLng(latitude, longitude);
         intent.putExtra(Constants.RECEIVER, addressResultReceiver); //결과를 수신할 receiver
         intent.putExtra(Constants.LAT_DATA_EXTRA, latitude);
         intent.putExtra(Constants.LNG_DATA_EXTRA, longitude);

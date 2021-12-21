@@ -48,7 +48,6 @@ public class WeatherXMLParser {
                     case XmlPullParser.END_TAG:
                         if (parser.getName().equals(TAG_ITEM)) {
                             resultMap.put(dto.getCategory(), dto.getFcstValue());
-//                            Log.d("xml parser", resultMap.get(dto.getCategory()) + " : " + dto.getFcstValue());
                             dto = null;
                         }
                         break;
@@ -63,7 +62,6 @@ public class WeatherXMLParser {
                             case FCSTVALUE:
                                 if(flag)
                                     dto.setFcstValue(Double.parseDouble(parser.getText()));
-
                                 break;
                         }
                         tagType = TagType.NONE;

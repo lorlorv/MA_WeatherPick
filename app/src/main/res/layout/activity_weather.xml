@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:rotationX="0">
 
 
     <TextView
@@ -77,6 +78,7 @@
         android:height="100dp"
         android:backgroundTint="#42A5F5"
         android:fontFamily="@font/pretendard_extrabold"
+        android:onClick="onClick"
         android:text="🍽 오늘 같은 날엔? 🍽 "
         android:textSize="24sp"
         app:cornerRadius="80px"
