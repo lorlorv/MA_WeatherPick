@@ -20,7 +20,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="100dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="250dp"
+        android:layout_marginBottom="150dp"
 
         app:cameraZoom="17"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -32,38 +32,39 @@
         app:uiZoomControls="true" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/tvBookmarkmap"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="44dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="24dp"
         android:fontFamily="@font/pretendard_extrabold"
-        android:text="주변의"
-        android:textSize="24sp"
+        android:text="⭐"
+        android:textSize="48sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tvPickedFood"
+        android:id="@+id/tvBookmarkmapName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="52dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="36dp"
         android:fontFamily="@font/pretendard_extrabold"
-        android:text="음식"
-        android:textSize="48sp"
-        app:layout_constraintStart_toEndOf="@+id/textView2"
+        android:text="이름"
+        android:textSize="24sp"
+        app:layout_constraintStart_toEndOf="@+id/tvBookmarkmap"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/textView8"
-        android:layout_width="wrap_content"
+    <Button
+        android:id="@+id/btnReview"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="176dp"
-        android:fontFamily="@font/pretendard_extrabold"
-        android:text="입니다!"
-        android:textSize="24sp"
-        app:layout_constraintStart_toEndOf="@+id/textView2"
-        app:layout_constraintTop_toTopOf="@+id/textView2" />
+        android:layout_marginTop="12dp"
+        android:fontFamily="@font/pretendard_regular"
+        android:text="후기 쓰러가기✏"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="@+id/placeMap"
+        app:layout_constraintStart_toStartOf="@+id/placeMap"
+        app:layout_constraintTop_toBottomOf="@+id/placeMap" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

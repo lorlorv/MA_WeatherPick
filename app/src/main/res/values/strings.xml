@@ -10,8 +10,9 @@
 
     <!-- map -->
     <string name="api_key">AIzaSyBtKo4aAEKeI4hLmt5ZuO7l0CT8d4YPuno</string>
-    <string name="init_lat">37.604094</string>
-    <string name="init_lng">127.042463</string>
+    <!--강남역 경도 위도 -->
+    <string name="init_lat">37.498095</string>
+    <string name="init_lng">127.027610</string>
 
     <!-- geoCoding -->
     <string name="hello_world">Hello world!</string>
@@ -20,4 +21,6 @@
 
 
     <!-- MainActivity -->
+    <string name="open">open</string>
+    <string name="close">close</string>
 </resources>

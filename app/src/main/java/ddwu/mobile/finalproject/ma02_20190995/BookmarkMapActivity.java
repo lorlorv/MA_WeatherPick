@@ -7,6 +7,8 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.util.Log;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -42,17 +44,19 @@ import noman.googleplaces.PlaceType;
 import noman.googleplaces.PlacesException;
 import noman.googleplaces.PlacesListener;
 
-public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class BookmarkMapActivity extends AppCompatActivity implements OnMapReadyCallback {
     final static String TAG = "PlaceActivity";
     final static int PERMISSION_REQ_CODE = 100;
 
     /*UI*/
     private TextView tvFoodName;
-    String foodName;
+    PlaceDto placeDto;
+    String address;
 
     /*Map*/
     private GoogleMap mGoogleMap;
     private MarkerOptions markerOptions;
+    private LatLngResultReceiver latLngResultReceiver;
 
     /*DATA*/
     private PlacesClient placesClient;
@@ -71,26 +75,58 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
         setContentView(R.layout.activity_place);
 
         Intent intent = getIntent();
-        foodName = intent.getStringExtra("foodName");
-        currentLoc = intent.getExtras().getParcelable("currentLoc");
-        mContext = this;
+        placeDto = (PlaceDto) intent.getSerializableExtra("bookmarkDTO");
 
         tvFoodName = findViewById(R.id.tvPickedFood);
-        tvFoodName.setText(foodName);
-//        lvList = findViewById(R.id.lvList);
+        tvFoodName.setText(placeDto.getName());
+
+
+        address = placeDto.getAddress();
+        Log.d("BookmarkMapLocation","address : " + address);
 
         mapLoad();
+
+        startLatLngService();
+        latLngResultReceiver = new LatLngResultReceiver(new Handler());
 
         Places.initialize(getApplicationContext(), getResources().getString(R.string.api_key));
         placesClient = Places.createClient(this);
 
         searchStart(PlaceType.RESTAURANT);
+    }
 
-//        resultList = new ArrayList();
-//        adapter = new CafeListAdapter(this, R.layout.listview_cafe, resultList);
-//        //아직은 비어있음, 나중에 실제 데이터를 담고있는 list로 바꿔치기 필요
-//        lvList.setAdapter(adapter);
-//        searchCafeStart(PlaceType.CAFE);
+    /* 주소 → 위도/경도 변환 IntentService 실행 */
+    private void startLatLngService() {
+        Intent intent = new Intent(this, FetchLatLngIntentService.class);
+        intent.putExtra(Constants.RECEIVER, latLngResultReceiver);
+        intent.putExtra(Constants.ADDRESS_DATA_EXTRA, address);
+        startService(intent);
+    }
+
+    /* 주소 → 위도/경도 변환 ResultReceiver */
+    class LatLngResultReceiver extends ResultReceiver {
+        public LatLngResultReceiver(Handler handler) {
+            super(handler);
+        }
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            ArrayList<LatLng> latLngList = null;
+            if (resultCode == Constants.SUCCESS_RESULT) {
+                if (resultData == null) return;
+                latLngList = (ArrayList<LatLng>) resultData.getSerializable(Constants.RESULT_DATA_KEY);
+                if (latLngList == null) {
+                    Log.d("BookmarkMapLocation", "null!!!!!!!!");
+                } else {
+                    LatLng latlng = latLngList.get(0);
+                    currentLoc = latlng;
+                    Log.d("BookmarkMapLocation","currentLat : " + currentLoc.latitude + "currentLng : " + currentLoc.longitude);
+                    mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLoc, 17));
+                }
+
+            } else {
+                 Log.d("BookmarkMapLocation", "null!!!!!!!!");
+            }
+        }
     }
 
     @Override
@@ -108,14 +144,14 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
         mGoogleMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
             @Override
             public boolean onMyLocationButtonClick() {
-                Toast.makeText(PlaceActivity.this, "Clicked", Toast.LENGTH_SHORT).show();
+                Toast.makeText(BookmarkMapActivity.this, "Clicked", Toast.LENGTH_SHORT).show();
                 return false;
             }
         });
         mGoogleMap.setOnMyLocationClickListener(new GoogleMap.OnMyLocationClickListener() {
             @Override
             public void onMyLocationClick(@NonNull Location location) {
-                Toast.makeText(PlaceActivity.this,
+                Toast.makeText(BookmarkMapActivity.this,
                         String.format("현재 위치: (%f, %f)", location.getLatitude(), location.getLongitude()),
                         Toast.LENGTH_SHORT).show();
             }
@@ -173,7 +209,6 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
                 .latlng(currentLoc.latitude, currentLoc.longitude)
                 .radius(500)
                 .type(type)
-                .keyword(foodName)
                 .build()
                 .execute();
     }
@@ -188,8 +223,11 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
                     for(noman.googleplaces.Place place : places){
                         markerOptions.title(place.getName());
                         markerOptions.position(new LatLng(place.getLatitude(),place.getLongitude()));
-                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker
-                                (BitmapDescriptorFactory.HUE_RED));
+                        if(place.getPlaceId().equals(placeDto.getPlaceId()))
+                            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                        else
+                            markerOptions.icon(BitmapDescriptorFactory.defaultMarker
+                                (BitmapDescriptorFactory.HUE_BLUE));
 
                         Marker newMarker = mGoogleMap.addMarker(markerOptions);
                         newMarker.setTag(place.getPlaceId());
@@ -235,7 +273,7 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
     }
 
     private void callDetailActivity(Place place) {
-        Intent intent = new Intent(PlaceActivity.this, DetailActivity.class);
+        Intent intent = new Intent(BookmarkMapActivity.this, DetailActivity.class);
         intent.putExtra("id", place.getId()) //photo 가져오기 위함
                 .putExtra("name",place.getName())
                 .putExtra("address",place.getAddress())
@@ -248,56 +286,6 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
 
         startActivity(intent);
     }
-
-
-//    /*입력된 유형의 주변 cafe 정보를 검색*/
-//    private void searchCafeStart(String type) {
-////        LatLng currentLoc = ((PlaceActivity)PlaceActivity.mContext).currentLoc;
-//        new NRPlaces.Builder().listener(placesCafeListener)
-//                .key(getResources().getString(R.string.api_key))
-//                .latlng(currentLoc.latitude, currentLoc.longitude)
-//                .radius(500)
-//                .type(type)
-//                .build()
-//                .execute();
-//    }
-//
-//    PlacesListener placesCafeListener = new PlacesListener() {
-//        @Override
-//        public void onPlacesSuccess(final List<noman.googleplaces.Place> places) {
-//            runOnUiThread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    for (noman.googleplaces.Place place : places) {
-//                        resultList = new ArrayList<>();
-//                        CafeDto cafeDto = new CafeDto();
-//                        cafeDto.setName(place.getName());
-//                        resultList.add(cafeDto);
-//                        Log.d(TAG, place.getName() + "  " + place.getPlaceId());
-//                    }
-//                    setListOnAdapter();
-//                }
-//
-//            });
-//
-//
-//        }
-//
-//        @Override
-//        public void onPlacesFailure(PlacesException e) { }
-//        @Override
-//        public void onPlacesStart() { }
-//        @Override
-//        public void onPlacesFinished() { }
-//    };
-//
-//    public void setListOnAdapter(){
-//        adapter.setList(resultList);
-//        for(int i = 0; i < resultList.size(); i++){
-//            Log.d("resultList : " , String.valueOf(resultList.get(i).getName()));
-//        }
-//    }
-
-
 }
+
 
