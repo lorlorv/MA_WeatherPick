@@ -10,23 +10,29 @@ public class PlaceDto implements Serializable {
     private String date; //방문 날짜
     private String photoPath; //찍은 사진
     private String memo; //한줄평
-    private int rating; //별점
+    private float rating; //별점
     private String placeId; //식당 비건 유무
+    private double lat;
+    private double lng;
+    private String keyword;
 
     public PlaceDto() {
     }
 
     //즐겨찾기 시 사용
-    public PlaceDto(long id, String name, String phone, String address, String placeId) {
+    public PlaceDto(long id, String name, String phone, String address, String placeId, double lat, double lng, String keyword) {
         this.id = id;
         this.name = name;
         this.phone = phone;
         this.address = address;
         this.placeId = placeId;
+        this.lat = lat;
+        this.lng = lng;
+        this.keyword = keyword;
     }
 
     //리뷰 시 사용
-    public PlaceDto(long id, String name, String phone, String address, String date, String photoPath, String memo, int rating) {
+    public PlaceDto(long id, String name, String phone, String address, String date, String photoPath, String memo, float rating) {
         this.id = id;
         this.name = name;
         this.phone = phone;
@@ -93,11 +99,11 @@ public class PlaceDto implements Serializable {
         this.memo = memo;
     }
 
-    public int getRating() {
+    public float getRating() {
         return rating;
     }
 
-    public void setRating(int rating) {
+    public void setRating(float rating) {
         this.rating = rating;
     }
 
@@ -109,6 +115,28 @@ public class PlaceDto implements Serializable {
         this.placeId = placeId;
     }
 
+    public double getLat() {
+        return lat;
+    }
 
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public double getLng() {
+        return lng;
+    }
+
+    public void setLng(double lng) {
+        this.lng = lng;
+    }
+
+    public String getKeyword() {
+        return keyword;
+    }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
+    }
 }
 

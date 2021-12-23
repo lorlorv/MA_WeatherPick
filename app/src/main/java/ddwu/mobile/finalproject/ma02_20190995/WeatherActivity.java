@@ -5,17 +5,27 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.material.navigation.NavigationView;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 public class WeatherActivity extends AppCompatActivity {
@@ -62,7 +72,7 @@ public class WeatherActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-
+        this.settingSideNavBar();
     }
 
     public void WeatherInfo() throws UnsupportedEncodingException {
@@ -72,7 +82,39 @@ public class WeatherActivity extends AppCompatActivity {
 
         String base_date = simpleDateFormat.format(todayDate);
 
-        String base_time = "0800";
+        //어제날짜
+        Calendar calendar = new GregorianCalendar();
+        calendar.add(Calendar.DATE, -1); // 오늘날짜로부터 -1
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd"); // 날짜 포맷
+        String yesterday = sdf.format(calendar.getTime()); // String으로 저장
+
+        String base_time;
+        long now = System.currentTimeMillis();
+        Date date = new Date(now);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH");
+        int getTime = Integer.parseInt(dateFormat.format(date));
+        if(6 <= getTime && getTime < 8)
+            base_time = "0600";
+        else if(8 <= getTime && getTime < 11)
+            base_time = "0800";
+        else if(11 <= getTime && getTime < 14)
+            base_time = "1100";
+        else if(14 <= getTime && getTime < 17)
+            base_time = "1400";
+        else if(17 <= getTime && getTime < 20)
+            base_time = "1700";
+        else if(20 <= getTime && getTime < 23)
+            base_time = "2000";
+        else if(23 <= getTime && getTime < 24)
+            base_time = "2300";
+        else if(0 <= getTime && getTime < 2) {
+            base_date = yesterday;
+            base_time = "2300";
+        }
+        else if(2 <= getTime && getTime < 5)
+            base_time = "0200";
+        else
+            base_time = "0500";
 
         GpsTransfer gpsTransfer = new GpsTransfer();
         gpsTransfer.setLat(currentLoc.latitude);
@@ -90,7 +132,7 @@ public class WeatherActivity extends AppCompatActivity {
         urlBuilder.append("&" + URLEncoder.encode("pageNo","UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지번호*/
         urlBuilder.append("&" + URLEncoder.encode("numOfRows","UTF-8") + "=" + URLEncoder.encode("9", "UTF-8")); /*한 페이지 결과 수*/
         urlBuilder.append("&" + URLEncoder.encode("dataType","UTF-8") + "=" + URLEncoder.encode("XML", "UTF-8")); /*요청자료형식(XML/JSON) Default: XML*/
-        urlBuilder.append("&" + URLEncoder.encode("base_date","UTF-8") + "=" + URLEncoder.encode("20211222", "UTF-8")); /* 오늘 날짜 발표 */
+        urlBuilder.append("&" + URLEncoder.encode("base_date","UTF-8") + "=" + URLEncoder.encode(base_date, "UTF-8")); /* 오늘 날짜 발표 */
         urlBuilder.append("&" + URLEncoder.encode("base_time","UTF-8") + "=" + URLEncoder.encode(base_time, "UTF-8")); /*06시 발표(정시단위) */
         urlBuilder.append("&" + URLEncoder.encode("nx","UTF-8") + "=" + URLEncoder.encode(nx, "UTF-8")); /*예보지점의 X 좌표값*/
         urlBuilder.append("&" + URLEncoder.encode("ny","UTF-8") + "=" + URLEncoder.encode(ny, "UTF-8")); /*예보지점의 Y 좌표값*/
@@ -167,5 +209,64 @@ public class WeatherActivity extends AppCompatActivity {
                 startActivity(intent);
         }
 
+    }
+
+    public void settingSideNavBar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_dehaze_48);
+
+        DrawerLayout drawLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(
+                WeatherActivity.this,
+                drawLayout,
+                toolbar,
+                R.string.open,
+                R.string.close
+        );
+
+        drawLayout.addDrawerListener(actionBarDrawerToggle);
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+
+                int id = menuItem.getItemId();
+
+                if (id == R.id.menu_item1){
+                    Intent intent = new Intent(WeatherActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    Toast.makeText(getApplicationContext(), "위치설정!.", Toast.LENGTH_SHORT).show();
+                }else if(id == R.id.menu_item2){
+                    Intent intent = new Intent(WeatherActivity.this, BookmarkActivity.class);
+                    startActivity(intent);
+                    Toast.makeText(getApplicationContext(), "즐겨찾기!", Toast.LENGTH_SHORT).show();
+                }else if(id == R.id.menu_item3){
+                    Intent intent = new Intent(WeatherActivity.this, ReviewActivity.class);
+                    startActivity(intent);
+                    Toast.makeText(getApplicationContext(), "Review!", Toast.LENGTH_SHORT).show();
+                }
+
+                DrawerLayout drawer = findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
+                return true;
+            }
+        });
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 }

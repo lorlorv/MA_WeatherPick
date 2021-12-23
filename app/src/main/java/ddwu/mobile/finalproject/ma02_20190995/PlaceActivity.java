@@ -8,13 +8,18 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -32,6 +37,7 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.FetchPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -91,6 +97,8 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
 //        //아직은 비어있음, 나중에 실제 데이터를 담고있는 list로 바꿔치기 필요
 //        lvList.setAdapter(adapter);
 //        searchCafeStart(PlaceType.CAFE);
+
+        this.settingSideNavBar();
     }
 
     @Override
@@ -244,7 +252,13 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
                 .putExtra("opening_hours", place.getOpeningHours())
                 .putExtra("rating", place.getRating())
                 .putExtra("user_rating", place.getUserRatingsTotal())
-                .putExtra("website", place.getWebsiteUri());
+                .putExtra("website", place.getWebsiteUri())
+                .putExtra("currentLoc", currentLoc)
+                .putExtra("keyword", foodName);
+
+        Log.d("currentLOc : " , String.valueOf(currentLoc.latitude + " , " + currentLoc.longitude));
+        Log.d(TAG, foodName);
+
 
         startActivity(intent);
     }
@@ -297,6 +311,65 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
 //            Log.d("resultList : " , String.valueOf(resultList.get(i).getName()));
 //        }
 //    }
+
+    public void settingSideNavBar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_dehaze_48);
+
+        DrawerLayout drawLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(
+                PlaceActivity.this,
+                drawLayout,
+                toolbar,
+                R.string.open,
+                R.string.close
+        );
+
+        drawLayout.addDrawerListener(actionBarDrawerToggle);
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+
+                int id = menuItem.getItemId();
+
+                if (id == R.id.menu_item1){
+                    Intent intent = new Intent(PlaceActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    Toast.makeText(getApplicationContext(), "위치설정!.", Toast.LENGTH_SHORT).show();
+                }else if(id == R.id.menu_item2){
+                    Intent intent = new Intent(PlaceActivity.this, BookmarkActivity.class);
+                    startActivity(intent);
+                    Toast.makeText(getApplicationContext(), "즐겨찾기!", Toast.LENGTH_SHORT).show();
+                }else if(id == R.id.menu_item3){
+                    Intent intent = new Intent(PlaceActivity.this, ReviewActivity.class);
+                    startActivity(intent);
+                    Toast.makeText(getApplicationContext(), "Review!", Toast.LENGTH_SHORT).show();
+                }
+
+                DrawerLayout drawer = findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
+                return true;
+            }
+        });
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
 
 
 }

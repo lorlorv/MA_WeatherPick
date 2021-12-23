@@ -1,6 +1,5 @@
 package ddwu.mobile.finalproject.ma02_20190995;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -15,7 +14,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -36,42 +34,33 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.Arrays;
 import java.util.List;
 
-public class DetailActivity extends AppCompatActivity {
-    final static String TAG = "DetailActivity";
-
-    TextView tvName;
-    TextView tvAddress;
-    TextView tvPhone;
-    TextView tvOpeningHours;
-    TextView tvRating;
-    TextView tvUserRating;
-    TextView tvWebsite;
-    ImageView imageView;
-    ImageButton btnCall;
+public class BookmarkDetailActivity extends AppCompatActivity {
+    final static String TAG = "BookmarkDetailActivity";
 
     private PlacesClient placesClient;
     private PlaceDBManager placeDBManager;
     private PlaceDto placeDto;
+
+    private TextView tvName;
+    private TextView tvAddress;
+    private TextView tvPhone;
+    private ImageButton btnCall;
+    private ImageView imageView;
 
     String phone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
+        setContentView(R.layout.activity_bookmarkdetail);
 
         Places.initialize(getApplicationContext(), getResources().getString(R.string.api_key));
         placesClient = Places.createClient(this);
 
-        tvName = findViewById(R.id.tvName);
-        tvAddress = findViewById(R.id.tvAddress);
-        tvPhone = findViewById(R.id.tvPhone);
-        tvOpeningHours = findViewById(R.id.tvOpeningHours);
-        tvRating = findViewById(R.id.tvRating);
-        tvUserRating = findViewById(R.id.tvUserRating);
-        tvWebsite = findViewById(R.id.tvWebsite);
-        imageView = findViewById(R.id.ivPhoto);
-        btnCall = findViewById(R.id.btnCall);
+        tvName = findViewById(R.id.tvBmdName);
+        tvAddress = findViewById(R.id.tvBmdAddress);
+        tvPhone = findViewById(R.id.tvBmdPhone);
+        btnCall = findViewById(R.id.btnBmdCall);
 
         placeDto = new PlaceDto();
 
@@ -91,16 +80,9 @@ public class DetailActivity extends AppCompatActivity {
             tvPhone.setText(phone);
         placeDto.setPhone(phone);
 
-        Boolean isOpen = intent.getBooleanExtra("isOpen", false);
-        if(isOpen == null)
-            tvOpeningHours.setText("오픈 정보가 없습니다.");
-        else
-            tvOpeningHours.setText(isOpen.toString());
-        tvRating.setText(intent.getStringExtra("rating"));
-        tvUserRating.setText(intent.getStringExtra("user_rating"));
-        tvWebsite.setText(intent.getStringExtra("website"));
-        //photo_MetaData가져오기
 
+        //photo_MetaData가져오기
+        imageView = findViewById(R.id.ivBmdPhoto);
         String placeId = intent.getStringExtra("id");
         getPlaceDetail(placeId);
         placeDto.setPlaceId(placeId);
@@ -108,7 +90,6 @@ public class DetailActivity extends AppCompatActivity {
         LatLng currentLoc = intent.getParcelableExtra("currentLoc");
         placeDto.setLat(currentLoc.latitude);
         placeDto.setLng(currentLoc.longitude);
-        Log.d("DetailActivity's loc : " , String.valueOf(currentLoc.latitude + " , " + currentLoc.longitude));
 
         placeDto.setKeyword(intent.getStringExtra("keyword"));
 
@@ -153,23 +134,11 @@ public class DetailActivity extends AppCompatActivity {
     }
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btnCall:
-                AlertDialog.Builder builder = new AlertDialog.Builder(DetailActivity.this);
-                builder.setTitle("전화 DIALOG")
-                        .setMessage("전화 하시겠습니까?")
-                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Intent intent = new Intent("android.intent.action.DIAL", Uri.parse("tel:" + phone));
-                                startActivity(intent);
-                            }
-                        })
-                        .setNegativeButton("취소", null)
-                        .setCancelable(false)
-                        .show();
-
+            case R.id.btnBmdCall:
+                Intent intent = new Intent("android.intent.action.DIAL", Uri.parse("tel:" + phone));
+                startActivity(intent);
                 break;
-            case R.id.btnBookMark:
+            case R.id.btnBmdBookMark:
                 //즐겨찾기 구현
                 placeDBManager = new PlaceDBManager(this);
                 boolean result = placeDBManager.addNewBookmark(placeDto);
@@ -178,6 +147,10 @@ public class DetailActivity extends AppCompatActivity {
 
                 break;
 
+            case R.id.btnBmdReview:
+                Intent reviewIntent = new Intent(this, AddReviewActivity.class);
+                reviewIntent.putExtra("placeDto", placeDto);
+                startActivity(reviewIntent);
         }
     }
 
@@ -192,7 +165,7 @@ public class DetailActivity extends AppCompatActivity {
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
 
         ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(
-                DetailActivity.this,
+                BookmarkDetailActivity.this,
                 drawLayout,
                 toolbar,
                 R.string.open,
@@ -209,15 +182,15 @@ public class DetailActivity extends AppCompatActivity {
                 int id = menuItem.getItemId();
 
                 if (id == R.id.menu_item1){
-                    Intent intent = new Intent(DetailActivity.this, MainActivity.class);
+                    Intent intent = new Intent(BookmarkDetailActivity.this, MainActivity.class);
                     startActivity(intent);
-                    Toast.makeText(getApplicationContext(), "위치설정!.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "위치설정!", Toast.LENGTH_SHORT).show();
                 }else if(id == R.id.menu_item2){
-                    Intent intent = new Intent(DetailActivity.this, BookmarkActivity.class);
+                    Intent intent = new Intent(BookmarkDetailActivity.this, BookmarkActivity.class);
                     startActivity(intent);
                     Toast.makeText(getApplicationContext(), "즐겨찾기!", Toast.LENGTH_SHORT).show();
                 }else if(id == R.id.menu_item3){
-                    Intent intent = new Intent(DetailActivity.this, ReviewActivity.class);
+                    Intent intent = new Intent(BookmarkDetailActivity.this, ReviewActivity.class);
                     startActivity(intent);
                     Toast.makeText(getApplicationContext(), "Review!", Toast.LENGTH_SHORT).show();
                 }
@@ -240,4 +213,5 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 }
+
 

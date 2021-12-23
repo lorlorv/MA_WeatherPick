@@ -5,8 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import java.util.ArrayList;
-
 public class PlaceDBManager {
 
     PlaceDBHelper placeDBHelper = null;
@@ -18,51 +16,54 @@ public class PlaceDBManager {
         bookmarkDBHelper = new BookmarkDBHelper(context);
     }
 
-    //    DB의 모든 store를 반환
-    public ArrayList<PlaceDto> getAllReviews() {
-        ArrayList arrayList = new ArrayList();
-        SQLiteDatabase db = placeDBHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + PlaceDBHelper.TABLE_NAME, null);
-
-        while(cursor.moveToNext()) {
-            long id = cursor.getInt(cursor.getColumnIndex(PlaceDBHelper.COL_ID));
-            String name = cursor.getString(cursor.getColumnIndex(placeDBHelper.COL_NAME));
-            String phone = cursor.getString(cursor.getColumnIndex(placeDBHelper.COL_PHONE));
-            String address = cursor.getString(cursor.getColumnIndex(placeDBHelper.COL_ADDRESS));
-            String date = cursor.getString(cursor.getColumnIndex(placeDBHelper.COL_DATE));
-            String photoPath = cursor.getString(cursor.getColumnIndex(placeDBHelper.COL_PHOTOPATH));
-            String memo = cursor.getString(cursor.getColumnIndex(placeDBHelper.COL_MEMO));
-            int rating = cursor.getInt(cursor.getColumnIndex(placeDBHelper.COL_RATING));
-
-            arrayList.add ( new PlaceDto (id, name, phone, address, date, photoPath, memo, rating) );
-        }
-
-        cursor.close();
-        placeDBHelper.close();
-        return arrayList;
-    }
-
-    //    DB의 Bookmark
-    public ArrayList<PlaceDto> getAllBookmarks() {
-        ArrayList arrayList = new ArrayList();
-        SQLiteDatabase db = bookmarkDBHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + BookmarkDBHelper.TABLE_NAME, null);
-
-        while(cursor.moveToNext()) {
-            long id = cursor.getInt(cursor.getColumnIndex(BookmarkDBHelper.COL_ID));
-            String name = cursor.getString(cursor.getColumnIndex(bookmarkDBHelper.COL_NAME));
-            String phone = cursor.getString(cursor.getColumnIndex(bookmarkDBHelper.COL_PHONE));
-            String address = cursor.getString(cursor.getColumnIndex(bookmarkDBHelper.COL_ADDRESS));
-            String placeId = cursor.getString(cursor.getColumnIndex(bookmarkDBHelper.COL_PLACEID));
-
-
-            arrayList.add ( new PlaceDto (id, name, phone, address, placeId) );
-        }
-
-        cursor.close();
-        bookmarkDBHelper.close();
-        return arrayList;
-    }
+//    //    DB의 모든 store를 반환
+//    public ArrayList<PlaceDto> getAllReviews() {
+//        ArrayList arrayList = new ArrayList();
+//        SQLiteDatabase db = placeDBHelper.getReadableDatabase();
+//        Cursor cursor = db.rawQuery("SELECT * FROM " + PlaceDBHelper.TABLE_NAME, null);
+//
+//        while(cursor.moveToNext()) {
+//            long id = cursor.getInt(cursor.getColumnIndex(PlaceDBHelper.COL_ID));
+//            String name = cursor.getString(cursor.getColumnIndex(placeDBHelper.COL_NAME));
+//            String phone = cursor.getString(cursor.getColumnIndex(placeDBHelper.COL_PHONE));
+//            String address = cursor.getString(cursor.getColumnIndex(placeDBHelper.COL_ADDRESS));
+//            String date = cursor.getString(cursor.getColumnIndex(placeDBHelper.COL_DATE));
+//            String photoPath = cursor.getString(cursor.getColumnIndex(placeDBHelper.COL_PHOTOPATH));
+//            String memo = cursor.getString(cursor.getColumnIndex(placeDBHelper.COL_MEMO));
+//            float rating = cursor.getInt(cursor.getColumnIndex(placeDBHelper.COL_RATING));
+//
+//            arrayList.add ( new PlaceDto (id, name, phone, address, date, photoPath, memo, rating) );
+//        }
+//
+//        cursor.close();
+//        placeDBHelper.close();
+//        return arrayList;
+//    }
+//
+//    //    DB의 Bookmark
+//    public ArrayList<PlaceDto> getAllBookmarks() {
+//        ArrayList arrayList = new ArrayList();
+//        SQLiteDatabase db = bookmarkDBHelper.getReadableDatabase();
+//        Cursor cursor = db.rawQuery("SELECT * FROM " + BookmarkDBHelper.TABLE_NAME, null);
+//
+//        while(cursor.moveToNext()) {
+//            long id = cursor.getInt(cursor.getColumnIndex(BookmarkDBHelper.COL_ID));
+//            String name = cursor.getString(cursor.getColumnIndex(BookmarkDBHelper.COL_NAME));
+//            String phone = cursor.getString(cursor.getColumnIndex(BookmarkDBHelper.COL_PHONE));
+//            String address = cursor.getString(cursor.getColumnIndex(BookmarkDBHelper.COL_ADDRESS));
+//            String placeId = cursor.getString(cursor.getColumnIndex(BookmarkDBHelper.COL_PLACEID));
+//            Double lat = Double.valueOf(cursor.getString(cursor.getColumnIndex(BookmarkDBHelper.COL_LAT)));
+//            Double lng = Double.valueOf(cursor.getString(cursor.getColumnIndex(BookmarkDBHelper.COL_LNG)));
+//            String keyword = cursor.getString(cursor.getColumnIndex(BookmarkDBHelper.COL_KEYWORD));
+//
+//
+//            arrayList.add ( new PlaceDto (id, name, phone, address, placeId, lat, lng, keyword) );
+//        }
+//
+//        cursor.close();
+//        bookmarkDBHelper.close();
+//        return arrayList;
+//    }
 
 
 
@@ -92,6 +93,9 @@ public class PlaceDBManager {
         value.put(BookmarkDBHelper.COL_PHONE, newPlace.getPhone());
         value.put(BookmarkDBHelper.COL_ADDRESS, newPlace.getAddress());
         value.put(BookmarkDBHelper.COL_PLACEID, newPlace.getPlaceId());
+        value.put(BookmarkDBHelper.COL_LAT, newPlace.getLat());
+        value.put(BookmarkDBHelper.COL_LNG, newPlace.getLng());
+        value.put(BookmarkDBHelper.COL_KEYWORD, newPlace.getKeyword());
 
 //      insert 메소드를 사용할 경우 데이터 삽입이 정상적으로 이루어질 경우 1 이상, 이상이 있을 경우 0 반환 확인 가능
         long count = db.insert(BookmarkDBHelper.TABLE_NAME, null, value);
@@ -127,6 +131,18 @@ public class PlaceDBManager {
         String[] whereArgs = new String[] { String.valueOf(id) };
         int result = sqLiteDatabase.delete(BookmarkDBHelper.TABLE_NAME, whereClause,whereArgs);
         bookmarkDBHelper.close();
+
+        if (result > 0) return true;
+        return false;
+    }
+
+    //    _id 를 기준으로 DB에서 Bookmark삭제
+    public boolean removeReview(long id) {
+        SQLiteDatabase sqLiteDatabase = placeDBHelper.getWritableDatabase();
+        String whereClause = PlaceDBHelper.COL_ID + "=?";
+        String[] whereArgs = new String[] { String.valueOf(id) };
+        int result = sqLiteDatabase.delete(PlaceDBHelper.TABLE_NAME, whereClause,whereArgs);
+        placeDBHelper.close();
 
         if (result > 0) return true;
         return false;

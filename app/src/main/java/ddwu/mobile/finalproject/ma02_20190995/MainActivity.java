@@ -332,7 +332,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     startActivity(intent);
                     Toast.makeText(getApplicationContext(), "즐겨찾기!", Toast.LENGTH_SHORT).show();
                 }else if(id == R.id.menu_item3){
-                    Toast.makeText(getApplicationContext(), "메뉴아이템 3 선택", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(MainActivity.this, ReviewActivity.class);
+                    startActivity(intent);
+                    Toast.makeText(getApplicationContext(), "Review!", Toast.LENGTH_SHORT).show();
                 }
 
                 DrawerLayout drawer = findViewById(R.id.drawer_layout);

@@ -3,12 +3,20 @@ package ddwu.mobile.finalproject.ma02_20190995;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,6 +42,8 @@ public class PickActivity extends AppCompatActivity {
         resultMap = (HashMap<String, Double>) intent.getSerializableExtra("resultMap");
 
         pick();
+
+        this.settingSideNavBar();
     }
     public void pick() {
         rain_food = new String[]{"찌개", "찜", "칼국수", "수제비", "짬뽕", "우동", "치킨", "맥주", "국밥", "김치부침개", "두부김치", "파전"};
@@ -85,6 +95,65 @@ public class PickActivity extends AppCompatActivity {
                 ranPick();
                 Log.d("RANDOM", "isRandomed");
                 break;
+        }
+    }
+
+    public void settingSideNavBar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_dehaze_48);
+
+        DrawerLayout drawLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(
+                PickActivity.this,
+                drawLayout,
+                toolbar,
+                R.string.open,
+                R.string.close
+        );
+
+        drawLayout.addDrawerListener(actionBarDrawerToggle);
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+
+                int id = menuItem.getItemId();
+
+                if (id == R.id.menu_item1){
+                    Intent intent = new Intent(PickActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    Toast.makeText(getApplicationContext(), "위치설정!.", Toast.LENGTH_SHORT).show();
+                }else if(id == R.id.menu_item2){
+                    Intent intent = new Intent(PickActivity.this, BookmarkActivity.class);
+                    startActivity(intent);
+                    Toast.makeText(getApplicationContext(), "즐겨찾기!", Toast.LENGTH_SHORT).show();
+                }else if(id == R.id.menu_item3){
+                    Intent intent = new Intent(PickActivity.this, ReviewActivity.class);
+                    startActivity(intent);
+                    Toast.makeText(getApplicationContext(), "Review!", Toast.LENGTH_SHORT).show();
+                }
+
+                DrawerLayout drawer = findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
+                return true;
+            }
+        });
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
         }
     }
 

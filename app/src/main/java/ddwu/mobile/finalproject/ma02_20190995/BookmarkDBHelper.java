@@ -12,6 +12,9 @@ public class BookmarkDBHelper extends SQLiteOpenHelper {
     public final static String COL_PHONE = "phone";
     public final static String COL_ADDRESS = "address";
     public final static String COL_PLACEID = "placeId";
+    public final static String COL_LAT = "lat";
+    public final static String COL_LNG = "lng";
+    public final static String COL_KEYWORD = "keyword";
 
 
     public BookmarkDBHelper(Context context) {
@@ -22,7 +25,8 @@ public class BookmarkDBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("create table " + TABLE_NAME + " ( " + COL_ID + " integer primary key autoincrement,"
-                + COL_NAME + " TEXT, " + COL_PHONE + " TEXT, " + COL_ADDRESS + " TEXT, " + COL_PLACEID + " TEXT);");
+                + COL_NAME + " TEXT, " + COL_PHONE + " TEXT, " + COL_ADDRESS + " TEXT, " + COL_PLACEID + " TEXT, " + COL_LAT + " TEXT, "
+                + COL_LNG + " TEXT," + COL_KEYWORD + " TEXT);");
 
 //		샘플 데이터
 

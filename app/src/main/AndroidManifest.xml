@@ -13,6 +13,14 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.DIAL_PHONE" />
 
+    <!-- Photo -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
     <application
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
@@ -22,9 +30,20 @@
         android:theme="@style/Theme.Ma02_20190995"
         android:usesCleartextTraffic="true" >
 
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="ddwu.mobile.finalproject.ma02_20190995.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/api_key" />
+
 
         <activity
             android:name=".MainActivity"
@@ -44,16 +63,39 @@
             android:name=".FetchLatLngIntentService"
             android:exported="false"/>
 
-        <activity android:name=".WeatherActivity"/>
-        <activity android:name=".PickActivity"/>
-        <activity android:name=".PlaceActivity"/>
+        <activity android:name=".WeatherActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:exported="true"/>
+        <activity android:name=".PickActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:exported="true"/>
+        <activity android:name=".PlaceActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:exported="true"/>
         <activity android:name=".DetailActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:exported="true"/>
-        <activity android:name=".BookmarkActivity"/>
+        <activity android:name=".BookmarkActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:exported="true"/>
         <activity android:name=".BookmarkMapActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:exported="true"/>
+        <activity android:name=".BookmarkDetailActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:exported="true"/>
+        <activity android:name=".AddReviewActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:exported="true"/>
+        <activity android:name=".ReviewActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:exported="true"/>
+        <activity android:name=".ShowReviewActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:exported="true"/>
+
     </application>
+
+
 
 </manifest>

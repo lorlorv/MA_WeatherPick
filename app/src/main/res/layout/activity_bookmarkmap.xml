@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:orientation="vertical"
+    android:background="#FFFFFFFF"
+    android:id="@+id/drawer_layout"
+    tools:context=".MainActivity">
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <!-- Google Map -->
 
@@ -13,14 +21,14 @@
     app:cameraTargetLng="@string/init_lng"-->
 
     <fragment
-        android:id="@+id/placeMap"
+        android:id="@+id/bookmarkMap"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="150dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="150dp"
+        android:layout_marginBottom="100dp"
 
         app:cameraZoom="17"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -35,8 +43,8 @@
         android:id="@+id/tvBookmarkmap"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="68dp"
         android:fontFamily="@font/pretendard_extrabold"
         android:text="⭐"
         android:textSize="48sp"
@@ -47,24 +55,26 @@
         android:id="@+id/tvBookmarkmapName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="36dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="88dp"
         android:fontFamily="@font/pretendard_extrabold"
         android:text="이름"
         android:textSize="24sp"
         app:layout_constraintStart_toEndOf="@+id/tvBookmarkmap"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/btnReview"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:fontFamily="@font/pretendard_regular"
-        android:text="후기 쓰러가기✏"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="@+id/placeMap"
-        app:layout_constraintStart_toStartOf="@+id/placeMap"
-        app:layout_constraintTop_toBottomOf="@+id/placeMap" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>
+<include
+layout="@layout/appbar"
+android:layout_width="match_parent"
+android:layout_height="match_parent" />
+
+<com.google.android.material.navigation.NavigationView
+android:id="@+id/nav_view"
+android:layout_width="wrap_content"
+android:layout_height="match_parent"
+android:layout_gravity="start"
+android:fitsSystemWindows="true"
+app:headerLayout="@layout/header"
+app:menu="@menu/drawer_layout" />
+    </androidx.drawerlayout.widget.DrawerLayout>

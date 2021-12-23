@@ -10,13 +10,18 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -34,6 +39,7 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.FetchPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,13 +51,14 @@ import noman.googleplaces.PlacesException;
 import noman.googleplaces.PlacesListener;
 
 public class BookmarkMapActivity extends AppCompatActivity implements OnMapReadyCallback {
-    final static String TAG = "PlaceActivity";
+    final static String TAG = "BookmarkMapActivity";
     final static int PERMISSION_REQ_CODE = 100;
 
     /*UI*/
     private TextView tvFoodName;
     PlaceDto placeDto;
     String address;
+    String keyword;
 
     /*Map*/
     private GoogleMap mGoogleMap;
@@ -72,27 +79,30 @@ public class BookmarkMapActivity extends AppCompatActivity implements OnMapReady
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_place);
+        setContentView(R.layout.activity_bookmarkmap);
 
         Intent intent = getIntent();
         placeDto = (PlaceDto) intent.getSerializableExtra("bookmarkDTO");
 
-        tvFoodName = findViewById(R.id.tvPickedFood);
+        tvFoodName = findViewById(R.id.tvBookmarkmapName);
         tvFoodName.setText(placeDto.getName());
 
 
         address = placeDto.getAddress();
-        Log.d("BookmarkMapLocation","address : " + address);
+
+        currentLoc = new LatLng(placeDto.getLat(), placeDto.getLng());
+        Log.d("currentLOc : " , String.valueOf(currentLoc.latitude + " , " + currentLoc.longitude));
 
         mapLoad();
-
-        startLatLngService();
-        latLngResultReceiver = new LatLngResultReceiver(new Handler());
 
         Places.initialize(getApplicationContext(), getResources().getString(R.string.api_key));
         placesClient = Places.createClient(this);
 
+        keyword = placeDto.getKeyword();
+        Log.d(TAG, keyword);
         searchStart(PlaceType.RESTAURANT);
+
+        this.settingSideNavBar();
     }
 
     /* 주소 → 위도/경도 변환 IntentService 실행 */
@@ -120,7 +130,8 @@ public class BookmarkMapActivity extends AppCompatActivity implements OnMapReady
                     LatLng latlng = latLngList.get(0);
                     currentLoc = latlng;
                     Log.d("BookmarkMapLocation","currentLat : " + currentLoc.latitude + "currentLng : " + currentLoc.longitude);
-                    mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLoc, 17));
+                    mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLoc, 15));
+
                 }
 
             } else {
@@ -128,7 +139,13 @@ public class BookmarkMapActivity extends AppCompatActivity implements OnMapReady
             }
         }
     }
-
+    /*구글맵을 멤버변수로 로딩*/
+    private void mapLoad() {
+        SupportMapFragment mapFragment =
+                (SupportMapFragment)this.getSupportFragmentManager().findFragmentById(R.id.bookmarkMap);
+        mapFragment.getMapAsync(this);
+        // 매개변수 this: MainActivity 가 OnMapReadyCallback 을 구현하므로
+    }
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
@@ -165,13 +182,7 @@ public class BookmarkMapActivity extends AppCompatActivity implements OnMapReady
         });
     }
 
-    /*구글맵을 멤버변수로 로딩*/
-    private void mapLoad() {
-        SupportMapFragment mapFragment =
-                (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.placeMap);
-        mapFragment.getMapAsync(this);
-        // 매개변수 this: MainActivity 가 OnMapReadyCallback 을 구현하므로
-    }
+
     /* 필요 permission 요청 */
     private boolean checkPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -209,6 +220,7 @@ public class BookmarkMapActivity extends AppCompatActivity implements OnMapReady
                 .latlng(currentLoc.latitude, currentLoc.longitude)
                 .radius(500)
                 .type(type)
+                .keyword(keyword)
                 .build()
                 .execute();
     }
@@ -248,9 +260,8 @@ public class BookmarkMapActivity extends AppCompatActivity implements OnMapReady
     /*Place ID 의 장소에 대한 세부정보 획득*/
     private void getPlaceDetail(String placeId) {
         List<Place.Field> placeFields = Arrays.asList(Place.Field.ID,
-                Place.Field.NAME, Place.Field.OPENING_HOURS,
-                Place.Field.PHONE_NUMBER, Place.Field.ADDRESS,
-                Place.Field.RATING, Place.Field.USER_RATINGS_TOTAL, Place.Field.WEBSITE_URI);
+                Place.Field.NAME, Place.Field.PHONE_NUMBER, Place.Field.ADDRESS
+                );
 
         FetchPlaceRequest request = FetchPlaceRequest.builder(placeId, placeFields).build();
 
@@ -273,18 +284,75 @@ public class BookmarkMapActivity extends AppCompatActivity implements OnMapReady
     }
 
     private void callDetailActivity(Place place) {
-        Intent intent = new Intent(BookmarkMapActivity.this, DetailActivity.class);
+        Intent intent = new Intent(BookmarkMapActivity.this, BookmarkDetailActivity.class);
         intent.putExtra("id", place.getId()) //photo 가져오기 위함
                 .putExtra("name",place.getName())
                 .putExtra("address",place.getAddress())
                 .putExtra("phone",place.getPhoneNumber())
-                .putExtra("isOpen", place.isOpen())
-                .putExtra("opening_hours", place.getOpeningHours())
-                .putExtra("rating", place.getRating())
-                .putExtra("user_rating", place.getUserRatingsTotal())
-                .putExtra("website", place.getWebsiteUri());
+                .putExtra("currentLoc", currentLoc)
+                .putExtra("keyword", keyword);
+
 
         startActivity(intent);
+    }
+
+    public void settingSideNavBar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_dehaze_48);
+
+        DrawerLayout drawLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(
+                BookmarkMapActivity.this,
+                drawLayout,
+                toolbar,
+                R.string.open,
+                R.string.close
+        );
+
+        drawLayout.addDrawerListener(actionBarDrawerToggle);
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+
+                int id = menuItem.getItemId();
+
+                if (id == R.id.menu_item1){
+                    Intent intent = new Intent(BookmarkMapActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    Toast.makeText(getApplicationContext(), "위치설정!.", Toast.LENGTH_SHORT).show();
+                }else if(id == R.id.menu_item2){
+                    Intent intent = new Intent(BookmarkMapActivity.this, BookmarkActivity.class);
+                    startActivity(intent);
+                    Toast.makeText(getApplicationContext(), "즐겨찾기!", Toast.LENGTH_SHORT).show();
+                }else if(id == R.id.menu_item3){
+                    Intent intent = new Intent(BookmarkMapActivity.this, ReviewActivity.class);
+                    startActivity(intent);
+                    Toast.makeText(getApplicationContext(), "Review!", Toast.LENGTH_SHORT).show();
+                }
+
+                DrawerLayout drawer = findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
+                return true;
+            }
+        });
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 }
 
