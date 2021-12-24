@@ -29,16 +29,13 @@
         android:id="@+id/tvPicked"
         android:layout_width="250dp"
         android:layout_height="163dp"
-        android:layout_marginStart="50dp"
         android:layout_marginTop="40dp"
-        android:layout_marginEnd="100dp"
         android:fontFamily="@font/pretendard_extrabold"
         android:gravity="center"
         android:text="음식종류"
         android:textSize="70sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/textView5"
+        app:layout_constraintStart_toEndOf="@+id/textView4"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <TextView
@@ -82,7 +79,7 @@
         android:id="@+id/btnGood"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="200dp"
+        android:layout_marginEnd="150dp"
         android:layout_marginBottom="113dp"
         android:backgroundTint="#FFEBEE"
         android:onClick="onClick"
@@ -105,6 +102,21 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/btnGood"
         app:layout_constraintTop_toTopOf="@+id/btnGood" />
+
+    <Button
+        android:id="@+id/btnGoWeather"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#E3F2FD"
+        android:fontFamily="@font/pretendard_medium"
+        android:onClick="onClick"
+        android:text="☁날씨로 돌아가기☁"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnGood" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

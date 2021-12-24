@@ -187,13 +187,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         Toast.LENGTH_SHORT).show();
             }
         });
-//        mGoogleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-//            @Override
-//            public void onInfoWindowClick(Marker marker) {
-//                String placeId = marker.getTag().toString();
-//                getPlaceDetail(placeId);
-//            }
-//        });
     }
 
     /* 위도/경도 → 주소 변환 IntentService 실행 */
@@ -273,13 +266,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public boolean onOptionsItemSelected( MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.item01: //즐겨찾기 리스트
-
-            case R.id.item02: //리뷰 리스트
-
-            case R.id.item03: //앱 소개
-
-            case R.id.item04: //앱 종료
+            case R.id.item01: //앱 종료
                 AlertDialog.Builder  builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setTitle(R.string.dialog_exit)
                         .setMessage("앱을 종료하시겠습니까?")

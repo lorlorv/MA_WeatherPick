@@ -47,13 +47,8 @@
 
         <activity
             android:name=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <service
@@ -93,6 +88,16 @@
         <activity android:name=".ShowReviewActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:exported="true"/>
+       <receiver android:name=".AlarmReceiver"/>
+        <activity android:name=".SplashActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>>
 
     </application>
 

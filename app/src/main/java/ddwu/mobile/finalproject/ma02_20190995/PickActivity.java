@@ -1,8 +1,10 @@
 package ddwu.mobile.finalproject.ma02_20190995;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -10,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -46,20 +49,31 @@ public class PickActivity extends AppCompatActivity {
         this.settingSideNavBar();
     }
     public void pick() {
-        rain_food = new String[]{"찌개", "찜", "칼국수", "수제비", "짬뽕", "우동", "치킨", "맥주", "국밥", "김치부침개", "두부김치", "파전"};
-        winter_food = new String[]{"찌개", "찜", "칼국수", "수제비", "짬뽕", "우동", "치킨", "맥주", "국밥", "김치부침개", "두부김치", "파전"};
-        summer_food = new String[]{"냉면", "삼계탕"};
-        normal_food = new String[]{"한식", "중식", "양식", "마라탕"};
+        winter_food = new String[]{"탕", "찜", "우동", "찌개", "짬뽕", "국밥", "샤브샤브", "마라탕", "칼국수", "훠궈", "쌀국수"};
+        rain_food = new String[]{"삼겹살", "우동", "칼국수", "파전", "수제비", "빈대떡", "탕", "소주", "맥주", "막걸리"};
+        summer_food = new String[]{"냉면", "삼계탕", "장어", "국수"};
+        normal_food = new String[]{"떡볶이", "피자", "햄버거", "돈까스", "초밥", "회", "분식", "파스타", "스테이크", "죽", "샐러드"};
 
         foodList = new ArrayList<>();
-        if (resultMap.get("TMP").intValue() < 5) {
+        int weatherCode = resultMap.get("PTY").intValue();
+        if(weatherCode == 1 || weatherCode == 2 || weatherCode == 3 || weatherCode == 4){
             for (int i = 0; i < rain_food.length; i++) {
+                foodList.add(rain_food[i]);
+            }
+        }
+        else if (resultMap.get("TMP").intValue() < 5) {
+            for (int i = 0; i < winter_food.length; i++) {
                 foodList.add(winter_food[i]);
             }
         }
-        else if(resultMap.get("TMP").intValue() >= 5){
+        else if(5 <= resultMap.get("TMP").intValue()  && resultMap.get("TMP").intValue() < 25){
             for(int i = 0; i < normal_food.length; i++){
                 foodList.add(normal_food[i]);
+            }
+        }
+        else if(resultMap.get("TMP").intValue() >25){
+            for(int i = 0; i < summer_food.length; i++){
+                foodList.add(summer_food[i]);
             }
         }
 
@@ -94,6 +108,9 @@ public class PickActivity extends AppCompatActivity {
             case R.id.btnBad:
                 ranPick();
                 Log.d("RANDOM", "isRandomed");
+                break;
+            case R.id.btnGoWeather:
+                finish();
                 break;
         }
     }
@@ -155,6 +172,33 @@ public class PickActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+    }
+
+    /*menu*/
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected( MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.item01: //앱 종료
+                AlertDialog.Builder  builder = new AlertDialog.Builder(PickActivity.this);
+                builder.setTitle(R.string.dialog_exit)
+                        .setMessage("앱을 종료하시겠습니까?")
+//                    .setIcon(R.mipmap.foot)
+                        .setPositiveButton(R.string.dialog_exit, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                finish();
+                            }
+                        })
+                        .setNegativeButton(R.string.dialog_cancel, null)
+                        .setCancelable(false)
+                        .show();
+                break;
+        }
+        return true;
     }
 
 }

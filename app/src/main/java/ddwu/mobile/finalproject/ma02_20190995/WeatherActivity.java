@@ -1,10 +1,18 @@
 package ddwu.mobile.finalproject.ma02_20190995;
 
+import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -12,6 +20,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -33,6 +42,7 @@ public class WeatherActivity extends AppCompatActivity {
     TextView tvCurrentLoc;
     TextView tvTemp;
     TextView tvWeather;
+    TextView icon;
 
     /*버튼을 눌렀을 때 권한요청으로 실행이 넘어갈 경우를 대비해 클릭한 버튼 기억*/
     private int clickedButton;
@@ -48,6 +58,12 @@ public class WeatherActivity extends AppCompatActivity {
     WeatherDto dto;
     HashMap<String,Double> resultMap;
 
+    /*Alarm*/
+    PendingIntent sender = null;
+    AlarmManager alarmManager = null;
+    String alarmTime;
+    int weatherCode;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
@@ -55,6 +71,7 @@ public class WeatherActivity extends AppCompatActivity {
         tvCurrentLoc = findViewById(R.id.tvCurrentLoc);
         tvTemp = findViewById(R.id.tvTmp);
         tvWeather = findViewById(R.id.tvWeather);
+        icon = findViewById(R.id.IconWeather);
 
         Intent intent = getIntent();
         String address = intent.getStringExtra("currentAddr");
@@ -66,13 +83,37 @@ public class WeatherActivity extends AppCompatActivity {
 
         resultMap = new HashMap<>();
         networkManager = new WeatherNetworkManager(this);
+
         try {
             WeatherInfo();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
 
+        /*Alarm*/
+        alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        createNotificationChannel();
+
         this.settingSideNavBar();
+    }
+
+    //channel 만드는 코드
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);       // strings.xml 에 채널명 기록
+            String description = getString(R.string.channel_description);       // strings.xml에 채널 설명 기록
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;    // 알림의 우선순위 지정
+            NotificationChannel channel = new NotificationChannel(getString(R.string.CHANNEL_ID), name, importance);
+            // CHANNEL_ID 지정
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            // 채널 생성
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 
     public void WeatherInfo() throws UnsupportedEncodingException {
@@ -89,10 +130,12 @@ public class WeatherActivity extends AppCompatActivity {
         String yesterday = sdf.format(calendar.getTime()); // String으로 저장
 
         String base_time;
+        /*현재 시간*/
         long now = System.currentTimeMillis();
         Date date = new Date(now);
         SimpleDateFormat dateFormat = new SimpleDateFormat("HH");
         int getTime = Integer.parseInt(dateFormat.format(date));
+
         if(6 <= getTime && getTime < 8)
             base_time = "0600";
         else if(8 <= getTime && getTime < 11)
@@ -178,28 +221,41 @@ public class WeatherActivity extends AppCompatActivity {
                 tvTemp.setText(resultMap.get("TMP").toString());
 
             String weatherType = "";
+            String weatherIcon = "";
             switch(resultMap.get("PTY").intValue()){
                 case 1:
                     weatherType = "비";
+                    weatherIcon = "🌧";
+                    weatherCode = 1; //비
                     break;
                     case 2:
                         weatherType = "비/눈";
+                        weatherIcon = "🌧❄";
+                        weatherCode = 2; //비/눈
                         break;
                         case 3:
                             weatherType = "눈";
+                            weatherIcon = "🌨";
+                            weatherCode = 3; //눈
                             break;
                 case 4:
                     weatherType = "소나기";
+                    weatherIcon = "☂";
+                    weatherCode = 4; //소나기
                     break;
                 default:
                     weatherType = "맑음";
+                    weatherIcon = "🌞";
+                    weatherCode = 5; //맑음
                     break;
             }
             tvWeather.setText(weatherType);
+            icon.setText(weatherIcon);
+            startAlarm(weatherCode);
             }
         }
 
-    public void onClick(View v) {
+    public void onClick(View v) throws UnsupportedEncodingException {
         switch (v.getId()) {
             case R.id.btnStart:
                 clickedButton = R.id.btnStart;
@@ -207,8 +263,22 @@ public class WeatherActivity extends AppCompatActivity {
                 intent.putExtra("resultMap", resultMap);
                 intent.putExtra("currentLoc", currentLoc);
                 startActivity(intent);
+                break;
+
         }
 
+    }
+    public void startAlarm(int weatherCode){
+        Intent alarmIntent;
+        alarmIntent = new Intent(this, AlarmReceiver.class);
+        alarmIntent.putExtra("weatherCode", weatherCode);
+        sender = PendingIntent.getBroadcast(this, 2, alarmIntent, 0);
+        // 알람 시간
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.add(Calendar.SECOND, 3);
+        // 알람 등록
+        alarmManager.set(AlarmManager.RTC, calendar.getTimeInMillis(), sender);
     }
 
     public void settingSideNavBar() {
@@ -268,5 +338,32 @@ public class WeatherActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+    }
+
+    /*menu*/
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected( MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.item01: //앱 종료
+                AlertDialog.Builder  builder = new AlertDialog.Builder(WeatherActivity.this);
+                builder.setTitle(R.string.dialog_exit)
+                        .setMessage("앱을 종료하시겠습니까?")
+//                    .setIcon(R.mipmap.foot)
+                        .setPositiveButton(R.string.dialog_exit, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                finish();
+                            }
+                        })
+                        .setNegativeButton(R.string.dialog_cancel, null)
+                        .setCancelable(false)
+                        .show();
+                break;
+        }
+        return true;
     }
 }

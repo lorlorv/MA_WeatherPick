@@ -1,25 +1,34 @@
 package ddwu.mobile.finalproject.ma02_20190995;
 
 import android.Manifest;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -41,8 +50,14 @@ import com.google.android.libraries.places.api.net.FetchPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.navigation.NavigationView;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import noman.googleplaces.NRPlaces;
@@ -74,6 +89,10 @@ public class BookmarkMapActivity extends AppCompatActivity implements OnMapReady
     CafeListAdapter adapter;
     ArrayList<CafeDto> resultList;
     ListView lvList;
+
+    /* MMS */
+    private String mCurrentPhotoPath;
+    File photoFile;
 
 
     @Override
@@ -353,6 +372,119 @@ public class BookmarkMapActivity extends AppCompatActivity implements OnMapReady
         } else {
             super.onBackPressed();
         }
+    }
+
+    public void onClick(View v) {
+        switch(v.getId()) {
+            case R.id.btnGoBookmark:
+                finish();
+                break;
+
+            case R.id.btnShare:
+                shareMap();
+                break;
+        }
+    }
+
+    public void shareMap() {
+        photoFile = null;
+        try {
+            photoFile = createImageFile();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        takeCaptureMap();
+        //문자 발송
+        if (mCurrentPhotoPath != null) {
+            Uri uri;
+            if (Build.VERSION.SDK_INT < 24) { //nougat 전 버전
+                uri = Uri.fromFile(photoFile);
+            } else {
+                uri = FileProvider.getUriForFile(BookmarkMapActivity.this,
+                        "ddwu.mobile.finalproject.ma02_20190995.fileprovider",
+                        photoFile);
+            }
+
+            String text = "오늘 이거 어때?";
+            try {
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.putExtra("sms_body",text);
+                intent.putExtra(Intent.EXTRA_STREAM, uri);
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                intent.setType("image/*");
+                startActivity(intent);
+            } catch (ActivityNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void takeCaptureMap() {
+        GoogleMap.SnapshotReadyCallback snapshotReadyCallback = new GoogleMap.SnapshotReadyCallback() {
+            @Override
+            public void onSnapshotReady(Bitmap bitmap) {
+                try {
+                    FileOutputStream fos = null;
+
+                    fos = new FileOutputStream(mCurrentPhotoPath);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                    sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file:/" + mCurrentPhotoPath)));
+                    Log.d(TAG, "캡쳐 완료!");
+
+                    fos.flush();
+                    fos.close();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        mGoogleMap.snapshot(snapshotReadyCallback);
+    }
+
+    /*현재 시간 정보를 사용하여 파일 정보 생성*/
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    /*menu*/
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected( MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.item01: //앱 종료
+                AlertDialog.Builder  builder = new AlertDialog.Builder(BookmarkMapActivity.this);
+                builder.setTitle(R.string.dialog_exit)
+                        .setMessage("앱을 종료하시겠습니까?")
+//                    .setIcon(R.mipmap.foot)
+                        .setPositiveButton(R.string.dialog_exit, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                finish();
+                            }
+                        })
+                        .setNegativeButton(R.string.dialog_cancel, null)
+                        .setCancelable(false)
+                        .show();
+                break;
+        }
+        return true;
     }
 }
 

@@ -23,4 +23,9 @@
     <!-- MainActivity -->
     <string name="open">open</string>
     <string name="close">close</string>
+
+    <!-- Alarm -->
+    <string name="channel_name">My Channel</string>
+    <string name="channel_description">Weather Channel</string>
+    <string name="CHANNEL_ID">Weather Channel</string>
 </resources>

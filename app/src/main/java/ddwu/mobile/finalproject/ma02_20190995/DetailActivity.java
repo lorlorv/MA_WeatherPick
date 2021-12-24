@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
@@ -68,8 +69,8 @@ public class DetailActivity extends AppCompatActivity {
         tvPhone = findViewById(R.id.tvPhone);
         tvOpeningHours = findViewById(R.id.tvOpeningHours);
         tvRating = findViewById(R.id.tvRating);
-        tvUserRating = findViewById(R.id.tvUserRating);
-        tvWebsite = findViewById(R.id.tvWebsite);
+//        tvUserRating = findViewById(R.id.tvUserRating);
+//        tvWebsite = findViewById(R.id.tvWebsite);
         imageView = findViewById(R.id.ivPhoto);
         btnCall = findViewById(R.id.btnCall);
 
@@ -85,8 +86,10 @@ public class DetailActivity extends AppCompatActivity {
         placeDto.setAddress(address);
 
         phone = intent.getStringExtra("phone");
-        if(phone == null)
+        if(phone == null) {
             tvPhone.setText("전화번호 정보가 없습니다.");
+            btnCall.setEnabled(false);
+        }
         else
             tvPhone.setText(phone);
         placeDto.setPhone(phone);
@@ -96,9 +99,9 @@ public class DetailActivity extends AppCompatActivity {
             tvOpeningHours.setText("오픈 정보가 없습니다.");
         else
             tvOpeningHours.setText(isOpen.toString());
-        tvRating.setText(intent.getStringExtra("rating"));
-        tvUserRating.setText(intent.getStringExtra("user_rating"));
-        tvWebsite.setText(intent.getStringExtra("website"));
+//        tvRating.setText(intent.getStringExtra("rating"));
+//        tvUserRating.setText(intent.getStringExtra("user_rating"));
+//        tvWebsite.setText(intent.getStringExtra("website"));
         //photo_MetaData가져오기
 
         String placeId = intent.getStringExtra("id");
@@ -177,7 +180,9 @@ public class DetailActivity extends AppCompatActivity {
                     Toast.makeText(this, "즐겨찾기에 추가!", Toast.LENGTH_SHORT).show();
 
                 break;
-
+            case R.id.btnGoPlace:
+                finish();
+                break;
         }
     }
 
@@ -238,6 +243,33 @@ public class DetailActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+    }
+
+    /*menu*/
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected( MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.item01: //앱 종료
+                AlertDialog.Builder  builder = new AlertDialog.Builder(DetailActivity.this);
+                builder.setTitle(R.string.dialog_exit)
+                        .setMessage("앱을 종료하시겠습니까?")
+//                    .setIcon(R.mipmap.foot)
+                        .setPositiveButton(R.string.dialog_exit, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                finish();
+                            }
+                        })
+                        .setNegativeButton(R.string.dialog_cancel, null)
+                        .setCancelable(false)
+                        .show();
+                break;
+        }
+        return true;
     }
 }
 

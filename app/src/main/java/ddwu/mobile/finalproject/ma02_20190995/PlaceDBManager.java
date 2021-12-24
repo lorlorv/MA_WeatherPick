@@ -75,7 +75,7 @@ public class PlaceDBManager {
         value.put(PlaceDBHelper.COL_PHONE, newPlace.getPhone());
         value.put(PlaceDBHelper.COL_ADDRESS, newPlace.getAddress());
         value.put(PlaceDBHelper.COL_DATE, newPlace.getDate());
-        value.put(PlaceDBHelper.COL_PHOTOPATH, newPlace.getDate());
+        value.put(PlaceDBHelper.COL_PHOTOPATH, newPlace.getPhotoPath());
         value.put(PlaceDBHelper.COL_MEMO, newPlace.getMemo());
         value.put(PlaceDBHelper.COL_RATING, newPlace.getRating());
 

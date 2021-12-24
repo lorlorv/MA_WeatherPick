@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -185,6 +186,33 @@ public class BookmarkActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+    }
+
+    /*menu*/
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected( MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.item01: //앱 종료
+                AlertDialog.Builder  builder = new AlertDialog.Builder(BookmarkActivity.this);
+                builder.setTitle(R.string.dialog_exit)
+                        .setMessage("앱을 종료하시겠습니까?")
+//                    .setIcon(R.mipmap.foot)
+                        .setPositiveButton(R.string.dialog_exit, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                finish();
+                            }
+                        })
+                        .setNegativeButton(R.string.dialog_cancel, null)
+                        .setCancelable(false)
+                        .show();
+                break;
+        }
+        return true;
     }
 
 }

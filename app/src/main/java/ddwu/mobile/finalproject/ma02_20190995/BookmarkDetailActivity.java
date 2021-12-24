@@ -1,10 +1,12 @@
 package ddwu.mobile.finalproject.ma02_20190995;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
@@ -14,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -74,8 +77,10 @@ public class BookmarkDetailActivity extends AppCompatActivity {
         placeDto.setAddress(address);
 
         phone = intent.getStringExtra("phone");
-        if(phone == null)
+        if(phone == null) {
             tvPhone.setText("전화번호 정보가 없습니다.");
+            btnCall.setEnabled(false);
+        }
         else
             tvPhone.setText(phone);
         placeDto.setPhone(phone);
@@ -135,8 +140,19 @@ public class BookmarkDetailActivity extends AppCompatActivity {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnBmdCall:
-                Intent intent = new Intent("android.intent.action.DIAL", Uri.parse("tel:" + phone));
-                startActivity(intent);
+                AlertDialog.Builder builder = new AlertDialog.Builder(BookmarkDetailActivity.this);
+                builder.setTitle("전화 DIALOG")
+                        .setMessage("전화 하시겠습니까?")
+                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent intent = new Intent("android.intent.action.DIAL", Uri.parse("tel:" + phone));
+                                startActivity(intent);
+                            }
+                        })
+                        .setNegativeButton("취소", null)
+                        .setCancelable(false)
+                        .show();
                 break;
             case R.id.btnBmdBookMark:
                 //즐겨찾기 구현
@@ -211,6 +227,33 @@ public class BookmarkDetailActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+    }
+
+    /*menu*/
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected( MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.item01: //앱 종료
+                AlertDialog.Builder  builder = new AlertDialog.Builder(BookmarkDetailActivity.this);
+                builder.setTitle(R.string.dialog_exit)
+                        .setMessage("앱을 종료하시겠습니까?")
+//                    .setIcon(R.mipmap.foot)
+                        .setPositiveButton(R.string.dialog_exit, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                finish();
+                            }
+                        })
+                        .setNegativeButton(R.string.dialog_cancel, null)
+                        .setCancelable(false)
+                        .show();
+                break;
+        }
+        return true;
     }
 }
 

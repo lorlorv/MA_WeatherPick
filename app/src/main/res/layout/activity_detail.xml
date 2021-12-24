@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="120dp"
-        android:layout_marginBottom="100dp"
+        android:layout_marginBottom="130dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0"
@@ -30,37 +30,11 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/textView21"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:background="#E3F2FD"
-                android:fontFamily="@font/pretendard_semibold"
-                android:text="Website"
-                android:textColor="#424242"
-                android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="@+id/textView19"
-                app:layout_constraintTop_toBottomOf="@+id/textView19" />
-
-            <TextView
-                android:id="@+id/textView19"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:background="#E3F2FD"
-                android:fontFamily="@font/pretendard_semibold"
-                android:text="UserRating"
-                android:textColor="#424242"
-                android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="@+id/textView17"
-                app:layout_constraintTop_toBottomOf="@+id/textView17" />
-
-            <TextView
                 android:id="@+id/textView17"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
-                android:background="#E3F2FD"
+                android:background="#F3F3F3"
                 android:fontFamily="@font/pretendard_semibold"
                 android:text="Rating"
                 android:textColor="#424242"
@@ -72,21 +46,22 @@
                 android:id="@+id/tvAddress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="150dp"
+                android:layout_marginStart="16dp"
                 android:fontFamily="@font/pretendard_regular"
                 android:text="Address"
                 android:textSize="12sp"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/textView12"
                 app:layout_constraintTop_toTopOf="@+id/textView12" />
 
             <TextView
                 android:id="@+id/tvPhone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
                 android:fontFamily="@font/pretendard_regular"
                 android:text="phoneNumber"
                 android:textSize="12sp"
-                app:layout_constraintStart_toStartOf="@+id/tvAddress"
+                app:layout_constraintStart_toEndOf="@+id/textView15"
                 app:layout_constraintTop_toTopOf="@+id/textView15" />
 
             <TextView
@@ -94,7 +69,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
-                android:background="#E3F2FD"
+                android:background="#F3F3F3"
                 android:fontFamily="@font/pretendard_semibold"
                 android:text="PhoneNumber"
                 android:textColor="#424242"
@@ -107,7 +82,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="60dp"
-                android:background="#E3F2FD"
+                android:background="#F3F3F3"
                 android:fontFamily="@font/pretendard_semibold"
                 android:text="OpeningHour"
                 android:textColor="#424242"
@@ -129,9 +104,9 @@
                 android:id="@+id/textView12"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="197dp"
-                android:background="#E3F2FD"
+                android:background="#F3F3F3"
                 android:fontFamily="@font/pretendard_semibold"
                 android:text="Address"
                 android:textColor="#424242"
@@ -148,26 +123,6 @@
                 android:textSize="12sp"
                 app:layout_constraintStart_toStartOf="@+id/tvOpeningHours"
                 app:layout_constraintTop_toTopOf="@+id/textView17" />
-
-            <TextView
-                android:id="@+id/tvUserRating"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/pretendard_regular"
-                android:text="UserRating"
-                android:textSize="12sp"
-                app:layout_constraintStart_toStartOf="@+id/tvRating"
-                app:layout_constraintTop_toTopOf="@+id/textView19" />
-
-            <TextView
-                android:id="@+id/tvWebsite"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/pretendard_regular"
-                android:text="Website"
-                android:textSize="12sp"
-                app:layout_constraintStart_toStartOf="@+id/tvUserRating"
-                app:layout_constraintTop_toTopOf="@+id/textView21" />
 
             <ImageView
                 android:id="@+id/ivPhoto"
@@ -196,17 +151,14 @@
 
     <Button
         android:id="@+id/btnBookMark"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="161dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="157dp"
         android:background="#E3F2FD"
         android:backgroundTint="#E3F2FD"
         android:fontFamily="@font/pretendard_extrabold"
         android:foregroundTint="#E3F2FD"
         android:onClick="onClick"
-        android:text="즐겨찾기"
+        android:text="⭐즐겨찾기⭐"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -217,7 +169,7 @@
         android:id="@+id/textView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="72dp"
         android:fontFamily="@font/pretendard_extrabold"
         android:text="Name"
@@ -236,6 +188,19 @@
         android:textSize="30sp"
         app:layout_constraintStart_toEndOf="@+id/textView6"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnGoPlace"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="13dp"
+        android:fontFamily="@font/pretendard_medium"
+        android:onClick="onClick"
+        android:text="🗺지도로 돌아가기🗺"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnBookMark" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

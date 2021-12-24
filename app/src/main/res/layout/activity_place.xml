@@ -19,9 +19,9 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="200dp"
+        android:layout_marginTop="180dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="100dp"
+        android:layout_marginBottom="125dp"
 
         app:cameraZoom="17"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -36,10 +36,11 @@
         android:id="@+id/tvPickedFood"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="52dp"
-        android:layout_marginTop="72dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="56dp"
         android:fontFamily="@font/pretendard_extrabold"
         android:text="음식"
+        android:textColor="#000000"
         android:textSize="48sp"
         app:layout_constraintStart_toEndOf="@+id/textView2"
         app:layout_constraintTop_toTopOf="parent" />
@@ -59,13 +60,65 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="88dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="72dp"
         android:fontFamily="@font/pretendard_extrabold"
         android:text="주변의"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnGoPick"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="#E3F2FD"
+        android:fontFamily="@font/pretendard_medium"
+        android:onClick="onClick"
+        android:text="메뉴 다시 고르기🍕"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/placeMap" />
+
+    <Button
+        android:id="@+id/btnShare"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="#E0F2F1"
+        android:fontFamily="@font/pretendard_semibold"
+        android:onClick="onClick"
+        android:text="친구에게 공유하기📷"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnGoPick" />
+
+    <EditText
+        android:id="@+id/etSearch"
+        android:layout_width="233dp"
+        android:layout_height="46dp"
+        android:ems="10"
+        android:fontFamily="@font/pretendard_medium"
+        android:hint="상호명을 입력해주세요"
+        android:inputType="textPersonName"
+        app:layout_constraintStart_toStartOf="@+id/textView2"
+        app:layout_constraintTop_toBottomOf="@+id/tvPickedFood" />
+
+    <Button
+        android:id="@+id/btnSearch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/pretendard_semibold"
+        android:onClick="onClick"
+        android:text="검색"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@+id/etSearch"
+        app:layout_constraintTop_toBottomOf="@+id/tvPickedFood" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

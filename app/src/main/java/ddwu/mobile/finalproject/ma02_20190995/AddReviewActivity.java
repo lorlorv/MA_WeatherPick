@@ -1,6 +1,7 @@
 package ddwu.mobile.finalproject.ma02_20190995;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,6 +21,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.FileProvider;
@@ -33,6 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class AddReviewActivity extends AppCompatActivity {
+    final static String TAG = "AddReviewActivity";
     private static final int REQUEST_TAKE_PHOTO = 200;
 
     private TextView tvName;
@@ -79,6 +83,7 @@ public class AddReviewActivity extends AppCompatActivity {
         tvPhone.setText(phone);
         address = infoDto.getAddress();
         tvAddress.setText(address);
+        etPhoto.setImageResource(R.mipmap.image);
 
         //사진 찍기
         etPhoto.setOnTouchListener(new View.OnTouchListener() {
@@ -135,58 +140,6 @@ public class AddReviewActivity extends AppCompatActivity {
         return image;
     }
 
-    public void onClick(View v) {
-        switch(v.getId()) {
-            case R.id.btnReviewSave:
-//                DB에 촬영한 사진의 파일 경로 및 메모 저장
-                String date = etDate.getText().toString();
-                String memo = etMemo.getText().toString();
-
-                reviewDto = new PlaceDto();
-                reviewDto.setName(name);
-                reviewDto.setPhone(phone);
-                reviewDto.setAddress(address);
-                reviewDto.setDate(date);
-                reviewDto.setPhotoPath(mCurrentPhotoPath);
-                reviewDto.setMemo(memo);
-                reviewDto.setRating(ratingNum);
-
-
-                reviewDBManager = new PlaceDBManager(this);
-                boolean result = reviewDBManager.addNewReview(reviewDto);
-                if(result)
-                    Toast.makeText(this, "즐겨찾기에 추가!", Toast.LENGTH_SHORT).show();
-
-//                SQLiteDatabase myDB = reviewDBHelper.getWritableDatabase();
-//                ContentValues row = new ContentValues();
-//
-//                row.put(PlaceDBHelper.COL_NAME, name);
-//                row.put(PlaceDBHelper.COL_PHONE, phone);
-//                row.put(PlaceDBHelper.COL_ADDRESS, address);
-//                row.put(PlaceDBHelper.COL_DATE, date);
-//                row.put(PlaceDBHelper.COL_PHOTOPATH, mCurrentPhotoPath);
-//                row.put(PlaceDBHelper.COL_MEMO, memo);
-//                row.put(PlaceDBHelper.COL_RATING, ratingNum);
-//
-//                long result = myDB.insert(PlaceDBHelper.TABLE_NAME, null, row);
-//
-//                if(result > 0)
-//                    Toast.makeText(this, "Save!", Toast.LENGTH_SHORT).show();
-
-                reviewDBHelper.close();
-                finish();
-                break;
-
-            case R.id.btnReviewCancel:
-                if(mCurrentPhotoPath != null) {
-                    File file = new File(mCurrentPhotoPath);
-                    file.delete();
-                }
-                finish();
-                break;
-        }
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -218,6 +171,72 @@ public class AddReviewActivity extends AppCompatActivity {
         Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
         etPhoto.setImageBitmap(bitmap);
     }
+
+    public void onClick(View v) {
+        switch(v.getId()) {
+            case R.id.btnReviewSave:
+//                DB에 촬영한 사진의 파일 경로 및 메모 저장
+                String date = etDate.getText().toString();
+                String memo = etMemo.getText().toString();
+
+                reviewDto = new PlaceDto();
+
+                reviewDto.setName(name);
+                reviewDto.setPhone(phone);
+                reviewDto.setAddress(address);
+
+                if(date.equals("")){
+                long today = System.currentTimeMillis();
+                Date todayDate = new Date(today);
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+
+                String tDate = simpleDateFormat.format(todayDate);
+                date = tDate;
+                }
+                reviewDto.setDate(date);
+                reviewDto.setPhotoPath(mCurrentPhotoPath);
+                if(memo.equals("")){
+                    memo = "memo 정보가 없습니다.";
+                }
+                reviewDto.setMemo(memo);
+                reviewDto.setRating(ratingNum);
+
+                reviewDBManager = new PlaceDBManager(this);
+                boolean result = reviewDBManager.addNewReview(reviewDto);
+                if(result)
+                    Toast.makeText(this, "REVIEW에 추가!", Toast.LENGTH_SHORT).show();
+
+//                SQLiteDatabase myDB = reviewDBHelper.getWritableDatabase();
+//                ContentValues row = new ContentValues();
+//
+//                row.put(PlaceDBHelper.COL_NAME, name);
+//                row.put(PlaceDBHelper.COL_PHONE, phone);
+//                row.put(PlaceDBHelper.COL_ADDRESS, address);
+//                row.put(PlaceDBHelper.COL_DATE, date);
+//                row.put(PlaceDBHelper.COL_PHOTOPATH, mCurrentPhotoPath);
+//                row.put(PlaceDBHelper.COL_MEMO, memo);
+//                row.put(PlaceDBHelper.COL_RATING, ratingNum);
+//
+//                long result = myDB.insert(PlaceDBHelper.TABLE_NAME, null, row);
+//
+//                if(result > 0)
+//                    Toast.makeText(this, "Save!", Toast.LENGTH_SHORT).show();
+
+                reviewDBHelper.close();
+                finish();
+                break;
+
+            case R.id.btnReviewCancel:
+                if(mCurrentPhotoPath != null) {
+                    File file = new File(mCurrentPhotoPath);
+                    file.delete();
+                }
+                finish();
+                break;
+        }
+    }
+
+
 
     public void settingSideNavBar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -276,6 +295,33 @@ public class AddReviewActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+    }
+
+    /*menu*/
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected( MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.item01: //앱 종료
+                AlertDialog.Builder  builder = new AlertDialog.Builder(AddReviewActivity.this);
+                builder.setTitle(R.string.dialog_exit)
+                        .setMessage("앱을 종료하시겠습니까?")
+//                    .setIcon(R.mipmap.foot)
+                        .setPositiveButton(R.string.dialog_exit, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                finish();
+                            }
+                        })
+                        .setNegativeButton(R.string.dialog_cancel, null)
+                        .setCancelable(false)
+                        .show();
+                break;
+        }
+        return true;
     }
 
 }
