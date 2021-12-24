@@ -12,8 +12,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.ResultReceiver;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -78,7 +76,6 @@ public class BookmarkMapActivity extends AppCompatActivity implements OnMapReady
     /*Map*/
     private GoogleMap mGoogleMap;
     private MarkerOptions markerOptions;
-    private LatLngResultReceiver latLngResultReceiver;
 
     /*DATA*/
     private PlacesClient placesClient;
@@ -86,7 +83,6 @@ public class BookmarkMapActivity extends AppCompatActivity implements OnMapReady
     public static Context mContext;
 
     /*Adapter*/
-    CafeListAdapter adapter;
     ArrayList<CafeDto> resultList;
     ListView lvList;
 
@@ -124,40 +120,6 @@ public class BookmarkMapActivity extends AppCompatActivity implements OnMapReady
         this.settingSideNavBar();
     }
 
-    /* 주소 → 위도/경도 변환 IntentService 실행 */
-    private void startLatLngService() {
-        Intent intent = new Intent(this, FetchLatLngIntentService.class);
-        intent.putExtra(Constants.RECEIVER, latLngResultReceiver);
-        intent.putExtra(Constants.ADDRESS_DATA_EXTRA, address);
-        startService(intent);
-    }
-
-    /* 주소 → 위도/경도 변환 ResultReceiver */
-    class LatLngResultReceiver extends ResultReceiver {
-        public LatLngResultReceiver(Handler handler) {
-            super(handler);
-        }
-        @Override
-        protected void onReceiveResult(int resultCode, Bundle resultData) {
-            ArrayList<LatLng> latLngList = null;
-            if (resultCode == Constants.SUCCESS_RESULT) {
-                if (resultData == null) return;
-                latLngList = (ArrayList<LatLng>) resultData.getSerializable(Constants.RESULT_DATA_KEY);
-                if (latLngList == null) {
-                    Log.d("BookmarkMapLocation", "null!!!!!!!!");
-                } else {
-                    LatLng latlng = latLngList.get(0);
-                    currentLoc = latlng;
-                    Log.d("BookmarkMapLocation","currentLat : " + currentLoc.latitude + "currentLng : " + currentLoc.longitude);
-                    mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLoc, 15));
-
-                }
-
-            } else {
-                 Log.d("BookmarkMapLocation", "null!!!!!!!!");
-            }
-        }
-    }
     /*구글맵을 멤버변수로 로딩*/
     private void mapLoad() {
         SupportMapFragment mapFragment =
@@ -279,7 +241,8 @@ public class BookmarkMapActivity extends AppCompatActivity implements OnMapReady
     /*Place ID 의 장소에 대한 세부정보 획득*/
     private void getPlaceDetail(String placeId) {
         List<Place.Field> placeFields = Arrays.asList(Place.Field.ID,
-                Place.Field.NAME, Place.Field.PHONE_NUMBER, Place.Field.ADDRESS
+                Place.Field.NAME, Place.Field.PHONE_NUMBER, Place.Field.ADDRESS,Place.Field.OPENING_HOURS,
+                Place.Field.RATING
                 );
 
         FetchPlaceRequest request = FetchPlaceRequest.builder(placeId, placeFields).build();
@@ -310,6 +273,17 @@ public class BookmarkMapActivity extends AppCompatActivity implements OnMapReady
                 .putExtra("phone",place.getPhoneNumber())
                 .putExtra("currentLoc", currentLoc)
                 .putExtra("keyword", keyword);
+        ArrayList<String> openingList = new ArrayList<>();
+        try{
+            for(int i = 0; i < place.getOpeningHours().getWeekdayText().size(); i++){
+                openingList.add(place.getOpeningHours().getWeekdayText().get(i));
+            }
+            intent.putExtra("opening_hours", openingList);
+        }catch (NullPointerException e){
+            intent.putExtra("opening_hours", "no opening_hours");
+        }
+
+        intent.putExtra("rating", place.getRating());
 
 
         startActivity(intent);

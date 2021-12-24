@@ -1,8 +1,9 @@
 package ddwu.mobile.finalproject.ma02_20190995;
 
-import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -35,58 +36,86 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class AddReviewActivity extends AppCompatActivity {
-    final static String TAG = "AddReviewActivity";
+public class UpdateReviewActivity extends AppCompatActivity {
+    final static String TAG = "UpdateReviewActivity";
     private static final int REQUEST_TAKE_PHOTO = 200;
 
     private TextView tvName;
     private TextView tvPhone;
     private TextView tvAddress;
     private EditText etDate;
-    private ImageView etPhoto;
+    private ImageView ivPhoto;
     private EditText etMemo;
-    private RatingBar etRating;
+    private RatingBar ratingbar;
 
     private String mCurrentPhotoPath;
-    PlaceDBHelper reviewDBHelper;
-    PlaceDBManager reviewDBManager;
-    PlaceDto infoDto;
-    PlaceDto reviewDto;
-
-    String name;
-    String phone;
-    String address;
+    PlaceDBHelper updateDBHelper;
+    PlaceDBManager updateDBManager;
+    PlaceDto updateDto;
     float ratingNum;
+    long id;
 
-    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_addreview);
+        setContentView(R.layout.activity_updatereview);
 
-        reviewDBHelper = new PlaceDBHelper(this);
+        updateDBHelper = new PlaceDBHelper(this);
 
         tvName = findViewById(R.id.tvReviewName);
         tvPhone = findViewById(R.id.tvReviewPhone);
         tvAddress = findViewById(R.id.tvReviewAddr);
-        etDate = findViewById(R.id.etReviewDate);
-        etPhoto = findViewById(R.id.etReviewPhoto);
-        etMemo = findViewById(R.id.etReviewMemo);
-        etRating = findViewById(R.id.etReviewRating);
+        etDate = findViewById(R.id.etUpdateDate);
+        ivPhoto = findViewById(R.id.ivUpdatePhoto);
+        etMemo = findViewById(R.id.etUpdateMemo);
+        ratingbar = findViewById(R.id.etUpdateRating);
 
-        //BookmarkDetailActivity에서 넘어온 정보 setting
+//      ShowReviewActivity 에서 전달 받은 _id 값을 사용하여 DB 레코드를 가져온 후 ImageView 와 TextView 설정
         Intent intent = getIntent();
-        infoDto = (PlaceDto) intent.getSerializableExtra("placeDto");
-        name = infoDto.getName();
+        id = intent.getLongExtra("id", 0);
+        updateDBHelper = new PlaceDBHelper(this);
+        SQLiteDatabase myDB = updateDBHelper.getWritableDatabase();
+
+        String selection = PlaceDBHelper.COL_ID + "=?";
+        String[] selectArgs = new String[]{String.valueOf(id)};
+
+        Cursor cursor = myDB.query(PlaceDBHelper.TABLE_NAME, null, selection, selectArgs,
+                null,null,null,null);
+
+        String name = "";
+        String phone = "";
+        String address = "";
+        String date = "";
+        String path = "";
+        String memo = "";
+        String rating = "";
+        while(cursor.moveToNext()){
+            name = cursor.getString(cursor.getColumnIndex(PlaceDBHelper.COL_NAME));
+            phone = cursor.getString(cursor.getColumnIndex(PlaceDBHelper.COL_PHONE));
+            address = cursor.getString(cursor.getColumnIndex(PlaceDBHelper.COL_ADDRESS));
+            date = cursor.getString(cursor.getColumnIndex(PlaceDBHelper.COL_DATE));
+            path = cursor.getString(cursor.getColumnIndex(PlaceDBHelper.COL_PHOTOPATH));
+            memo = cursor.getString(cursor.getColumnIndex(PlaceDBHelper.COL_MEMO));
+            rating = cursor.getString(cursor.getColumnIndex(PlaceDBHelper.COL_RATING));
+        }
+
         tvName.setText(name);
-        phone = infoDto.getPhone();
         tvPhone.setText(phone);
-        address = infoDto.getAddress();
         tvAddress.setText(address);
-        etPhoto.setImageResource(R.mipmap.image);
+        etDate.setText(date);
+        mCurrentPhotoPath = path;
+        if(mCurrentPhotoPath.equals("")){
+            ivPhoto.setImageResource(R.mipmap.image);
+        }
+        else
+            setPic();
+        etMemo.setText(memo);
+        ratingbar.setRating(Float.parseFloat(rating));
+
+        cursor.close();
 
         //사진 찍기
-        etPhoto.setOnTouchListener(new View.OnTouchListener() {
+        ivPhoto.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
@@ -100,7 +129,7 @@ public class AddReviewActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                         if(photoFile != null){
-                            Uri photoUri = FileProvider.getUriForFile(AddReviewActivity.this,
+                            Uri photoUri = FileProvider.getUriForFile(UpdateReviewActivity.this,
                                     "ddwu.mobile.finalproject.ma02_20190995.fileprovider",
                                     photoFile
                             );
@@ -114,7 +143,7 @@ public class AddReviewActivity extends AppCompatActivity {
             }
         });
 
-        etRating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+        ratingbar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
                 ratingNum = rating;
@@ -122,6 +151,7 @@ public class AddReviewActivity extends AppCompatActivity {
         });
 
         this.settingSideNavBar();
+
     }
 
     /*현재 시간 정보를 사용하여 파일 정보 생성*/
@@ -147,11 +177,59 @@ public class AddReviewActivity extends AppCompatActivity {
             setPic();
         }
     }
+
+    public void onClick(View v) {
+        switch(v.getId()) {
+            case R.id.btnUpdateOK:
+                String date = etDate.getText().toString();
+                String memo = etMemo.getText().toString();
+
+                updateDto = new PlaceDto();
+                updateDto.setId(id);
+
+                if(date.equals("")){
+                    long today = System.currentTimeMillis();
+                    Date todayDate = new Date(today);
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+
+                    String tDate = simpleDateFormat.format(todayDate);
+                    date = tDate;
+                }
+                updateDto.setDate(date);
+                updateDto.setPhotoPath(mCurrentPhotoPath);
+                if(memo.equals("")){
+                    memo = "memo 정보가 없습니다.";
+                }
+                updateDto.setMemo(memo);
+                updateDto.setRating(ratingNum);
+
+                updateDBManager = new PlaceDBManager(this);
+                boolean result = updateDBManager.modifyReview(updateDto);
+                if(result)
+                    Toast.makeText(this, "REVIEW 수정!", Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(this, "REVIEW 수정 실패", Toast.LENGTH_SHORT).show();
+
+                updateDBHelper.close();
+                Intent intent = new Intent(this, ReviewActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.btnUpdateCancel:
+                if(mCurrentPhotoPath != null) {
+                    File file = new File(mCurrentPhotoPath);
+                    file.delete();
+                }
+                finish();
+                break;
+        }
+    }
+
+
     /*사진의 크기를 ImageView에서 표시할 수 있는 크기로 변경*/
     private void setPic() {
         // Get the dimensions of the View
-        int targetW = etPhoto.getWidth();
-        int targetH = etPhoto.getHeight();
+        int targetW = 720;
+        int targetH = 1080;
 
         // Get the dimensions of the bitmap
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
@@ -169,58 +247,8 @@ public class AddReviewActivity extends AppCompatActivity {
 //        bmOptions.inPurgeable = true;
 
         Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-        etPhoto.setImageBitmap(bitmap);
+        ivPhoto.setImageBitmap(bitmap);
     }
-
-    public void onClick(View v) {
-        switch(v.getId()) {
-            case R.id.btnReviewSave:
-//                DB에 촬영한 사진의 파일 경로 및 메모 저장
-                String date = etDate.getText().toString();
-                String memo = etMemo.getText().toString();
-
-                reviewDto = new PlaceDto();
-
-                reviewDto.setName(name);
-                reviewDto.setPhone(phone);
-                reviewDto.setAddress(address);
-
-                if(date.equals("")){
-                long today = System.currentTimeMillis();
-                Date todayDate = new Date(today);
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
-
-                String tDate = simpleDateFormat.format(todayDate);
-                date = tDate;
-                }
-                reviewDto.setDate(date);
-                reviewDto.setPhotoPath(mCurrentPhotoPath);
-                if(memo.equals("")){
-                    memo = "memo 정보가 없습니다.";
-                }
-                reviewDto.setMemo(memo);
-                reviewDto.setRating(ratingNum);
-
-                reviewDBManager = new PlaceDBManager(this);
-                boolean result = reviewDBManager.addNewReview(reviewDto);
-                if(result)
-                    Toast.makeText(this, "REVIEW에 추가!", Toast.LENGTH_SHORT).show();
-
-                reviewDBHelper.close();
-                finish();
-                break;
-
-            case R.id.btnReviewCancel:
-                if(mCurrentPhotoPath != null) {
-                    File file = new File(mCurrentPhotoPath);
-                    file.delete();
-                }
-                finish();
-                break;
-        }
-    }
-
-
 
     public void settingSideNavBar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -233,7 +261,7 @@ public class AddReviewActivity extends AppCompatActivity {
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
 
         ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(
-                AddReviewActivity.this,
+                UpdateReviewActivity.this,
                 drawLayout,
                 toolbar,
                 R.string.open,
@@ -250,15 +278,15 @@ public class AddReviewActivity extends AppCompatActivity {
                 int id = menuItem.getItemId();
 
                 if (id == R.id.menu_item1){
-                    Intent intent = new Intent(AddReviewActivity.this, MainActivity.class);
+                    Intent intent = new Intent(UpdateReviewActivity.this, MainActivity.class);
                     startActivity(intent);
                     Toast.makeText(getApplicationContext(), "위치설정!.", Toast.LENGTH_SHORT).show();
                 }else if(id == R.id.menu_item2){
-                    Intent intent = new Intent(AddReviewActivity.this, BookmarkActivity.class);
+                    Intent intent = new Intent(UpdateReviewActivity.this, BookmarkActivity.class);
                     startActivity(intent);
                     Toast.makeText(getApplicationContext(), "즐겨찾기!", Toast.LENGTH_SHORT).show();
                 }else if(id == R.id.menu_item3){
-                    Intent intent = new Intent(AddReviewActivity.this, ReviewActivity.class);
+                    Intent intent = new Intent(UpdateReviewActivity.this, ReviewActivity.class);
                     startActivity(intent);
                     Toast.makeText(getApplicationContext(), "Review!", Toast.LENGTH_SHORT).show();
                 }
@@ -290,7 +318,7 @@ public class AddReviewActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected( MenuItem item) {
         switch (item.getItemId()) {
             case R.id.item01: //앱 종료
-                AlertDialog.Builder  builder = new AlertDialog.Builder(AddReviewActivity.this);
+                AlertDialog.Builder  builder = new AlertDialog.Builder(UpdateReviewActivity.this);
                 builder.setTitle(R.string.dialog_exit)
                         .setMessage("앱을 종료하시겠습니까?")
 //                    .setIcon(R.mipmap.foot)

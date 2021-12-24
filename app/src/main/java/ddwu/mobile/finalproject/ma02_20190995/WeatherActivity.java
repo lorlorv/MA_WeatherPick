@@ -166,6 +166,7 @@ public class WeatherActivity extends AppCompatActivity {
         String nx = String.valueOf((int)gpsTransfer.getxLat());
         String ny = String.valueOf((int)gpsTransfer.getyLng());
 
+        /*날씨 정보*/
         StringBuilder urlBuilder = new StringBuilder(getResources().getString(R.string.api_url)); /*URL*/
         try {
             urlBuilder.append("?" + URLEncoder.encode("serviceKey","UTF-8") + "=" + getResources().getString(R.string.open_api_key)); /*Service Key*/
@@ -181,7 +182,9 @@ public class WeatherActivity extends AppCompatActivity {
         urlBuilder.append("&" + URLEncoder.encode("ny","UTF-8") + "=" + URLEncoder.encode(ny, "UTF-8")); /*예보지점의 Y 좌표값*/
 
         new NetworkAsyncTask().execute(String.valueOf(urlBuilder));
+
     }
+
 
     class NetworkAsyncTask extends AsyncTask<String, Integer, String> {
         final static String NETWORK_ERR_MSG = "Server Error!";

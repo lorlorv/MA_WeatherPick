@@ -26,7 +26,7 @@
             android:layout_marginTop="60dp"
             android:fontFamily="@font/pretendard_extrabold"
             android:includeFontPadding="true"
-            android:text="👀"
+            android:text="✍"
             android:textColor="#000000"
             android:textSize="24sp"
             app:layout_constraintStart_toStartOf="parent"
@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:fontFamily="@font/pretendard_extrabold"
-            android:text="SHOW REVIEW"
+            android:text="UPDATE REVIEW"
             android:textColor="#000000"
             android:textSize="24sp"
             app:layout_constraintStart_toEndOf="@+id/textView7"
@@ -113,7 +113,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="200dp"
-            android:layout_marginBottom="120dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -133,7 +132,7 @@
                     android:fontFamily="@font/pretendard_semibold"
                     android:text="Memo"
                     app:layout_constraintStart_toStartOf="@+id/textView22"
-                    app:layout_constraintTop_toBottomOf="@+id/ivShowPhoto" />
+                    app:layout_constraintTop_toBottomOf="@+id/ivUpdatePhoto" />
 
                 <TextView
                     android:id="@+id/textView22"
@@ -143,14 +142,15 @@
                     android:fontFamily="@font/pretendard_semibold"
                     android:text="Take a Photo"
                     app:layout_constraintStart_toStartOf="@+id/textView24"
-                    app:layout_constraintTop_toBottomOf="@+id/tvShowDate" />
+                    app:layout_constraintTop_toBottomOf="@+id/etUpdateDate" />
 
                 <ImageView
-                    android:id="@+id/ivShowPhoto"
+                    android:id="@+id/ivUpdatePhoto"
                     android:layout_width="0dp"
                     android:layout_height="200dp"
                     android:layout_marginTop="8dp"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView22"
                     tools:srcCompat="@mipmap/ic_launcher" />
@@ -165,20 +165,8 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/tvShowMemo"
-                    android:layout_width="333dp"
-                    android:layout_height="109dp"
-                    android:layout_marginStart="16dp"
-                    android:ems="10"
-                    android:gravity="start|top"
-                    android:inputType="textMultiLine"
-                    android:textColor="#000000"
-                    app:layout_constraintStart_toEndOf="@+id/textView23"
-                    app:layout_constraintTop_toTopOf="@+id/textView23" />
-
-                <TextView
-                    android:id="@+id/tvShowDate"
+                <EditText
+                    android:id="@+id/etUpdateDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
@@ -193,51 +181,61 @@
                     android:id="@+id/textView25"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="114dp"
                     android:fontFamily="@font/pretendard_semibold"
                     android:text="Rating"
                     app:layout_constraintStart_toStartOf="@+id/textView23"
-                    app:layout_constraintTop_toBottomOf="@+id/tvShowMemo" />
+                    app:layout_constraintTop_toBottomOf="@+id/textView23" />
 
                 <RatingBar
-                    android:id="@+id/tvShowRating"
+                    android:id="@+id/etUpdateRating"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:isIndicator="true"
+                    android:isIndicator="false"
                     android:progressTint="#FFEB3B"
                     app:layout_constraintStart_toEndOf="@+id/textView25"
                     app:layout_constraintTop_toTopOf="@+id/textView25" />
+
+                <EditText
+                    android:id="@+id/etUpdateMemo"
+                    android:layout_width="317dp"
+                    android:layout_height="105dp"
+                    android:layout_marginStart="24dp"
+                    android:ems="10"
+                    android:gravity="start|top"
+                    android:inputType="textMultiLine"
+                    app:layout_constraintStart_toEndOf="@+id/textView23"
+                    app:layout_constraintTop_toTopOf="@+id/textView23" />
+
+                <Button
+                    android:id="@+id/btnUpdateCancel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="#E3F2FD"
+                    android:fontFamily="@font/pretendard_semibold"
+                    android:onClick="onClick"
+                    android:text="UPDATE CANCEL"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/btnUpdateOK" />
+
+                <Button
+                    android:id="@+id/btnUpdateOK"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:backgroundTint="#E0F2F1"
+                    android:fontFamily="@font/pretendard_semibold"
+                    android:onClick="onClick"
+                    android:text="UPDATE OK"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/etUpdateRating" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </ScrollView>
-
-        <Button
-            android:id="@+id/btnGoList"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:backgroundTint="#E0F2F1"
-            android:fontFamily="@font/pretendard_semibold"
-            android:onClick="onClick"
-            android:text="👉REVIEW LIST"
-            android:textSize="16sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/scrollView2" />
-
-        <Button
-            android:id="@+id/btnUpdate"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:backgroundTint="#E3F2FD"
-            android:fontFamily="@font/pretendard_semibold"
-            android:onClick="onClick"
-            android:text="✍REVIEW 수정하기"
-            android:textSize="16sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/btnGoList"
-            app:layout_constraintTop_toBottomOf="@+id/btnGoList" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

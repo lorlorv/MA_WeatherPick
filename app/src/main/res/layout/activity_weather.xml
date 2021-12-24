@@ -33,7 +33,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="92dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="48dp"
         android:fontFamily="@font/pretendard_black"
         android:text="11"
         android:textColor="#000000"
@@ -45,8 +45,8 @@
         android:id="@+id/tvW3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="160dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="208dp"
         android:text="오늘의 날씨"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="@+id/tvCurrentLoc"
@@ -57,36 +57,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="60dp"
         android:fontFamily="@font/pretendard_regular"
         android:text="비"
         android:textColor="#000000"
         android:textSize="48sp"
         app:layout_constraintStart_toEndOf="@+id/tvW3"
         app:layout_constraintTop_toBottomOf="@+id/tvTemperature" />
-
-    <TextView
-        android:id="@+id/tvW4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="100dp"
-        android:fontFamily="@font/pretendard_medium"
-        android:text="미세먼지"
-        android:textSize="24sp"
-        app:layout_constraintStart_toStartOf="@+id/tvCurrentLoc"
-        app:layout_constraintTop_toBottomOf="@+id/tvW3" />
-
-    <TextView
-        android:id="@+id/tvDust"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="8dp"
-        android:text="좋음/보통/나쁨/매우나쁨"
-        android:textSize="16sp"
-        app:layout_constraintStart_toEndOf="@+id/tvW4"
-        app:layout_constraintTop_toTopOf="@+id/tvW4" />
 
     <TextView
         android:id="@+id/tvCurrentLoc"
@@ -128,7 +105,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="65dp"
+        android:layout_marginTop="80dp"
         android:fontFamily="@font/pretendard_semibold"
         android:text="현재위치👉"
         android:textSize="16sp"

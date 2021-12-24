@@ -104,25 +104,25 @@ public class PlaceDBManager {
         return false;
     }
 
-//    //    _id 를 기준으로 store의 정보 변경
-//    public boolean modifyStore(Store store) {
-//        SQLiteDatabase sqLiteDatabase = placeDBHelper.getWritableDatabase();
-//        ContentValues row = new ContentValues();
-//
-//        row.put(PlaceDBHelper.COL_NAME, store.getName());
-//        row.put(PlaceDBHelper.COL_PHONE, store.getPhone());
-//        row.put(PlaceDBHelper.COL_CATEGORY, store.getCategory());
-//        row.put(PlaceDBHelper.COL_LOCATION, store.getLocation());
-//
-//        String whereClause = PlaceDBHelper.COL_ID + "=?";
-//        String[] whereArgs = new String[] { String.valueOf(store.getId()) };
-//
-//        int result = sqLiteDatabase.update(PlaceDBHelper.TABLE_NAME, row, whereClause, whereArgs);
-//        placeDBHelper.close();
-//
-//        if (result > 0) return true;
-//        return false;
-//    }
+    //    _id 를 기준으로 review의 정보 변경
+    public boolean modifyReview(PlaceDto review) {
+        SQLiteDatabase sqLiteDatabase = placeDBHelper.getWritableDatabase();
+        ContentValues row = new ContentValues();
+
+        row.put(PlaceDBHelper.COL_DATE, review.getDate());
+        row.put(PlaceDBHelper.COL_PHOTOPATH, review.getPhotoPath());
+        row.put(PlaceDBHelper.COL_MEMO, review.getMemo());
+        row.put(PlaceDBHelper.COL_RATING, review.getRating());
+
+        String whereClause = PlaceDBHelper.COL_ID + "=?";
+        String[] whereArgs = new String[] { String.valueOf(review.getId()) };
+
+        int result = sqLiteDatabase.update(PlaceDBHelper.TABLE_NAME, row, whereClause, whereArgs);
+        placeDBHelper.close();
+
+        if (result > 0) return true;
+        return false;
+    }
 //
     //    _id 를 기준으로 DB에서 Bookmark삭제
     public boolean removeBookmark(long id) {
@@ -154,5 +154,5 @@ public class PlaceDBManager {
         if (placeDBHelper != null) placeDBHelper.close();
         if (bookmarkDBHelper != null) bookmarkDBHelper.close();
         if (cursor != null) cursor.close();
-    };
+    }
 }

@@ -97,7 +97,10 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>>
+        </activity>
+        <activity android:name=".UpdateReviewActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:exported="true"/>
 
     </application>
 

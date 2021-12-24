@@ -7,14 +7,19 @@ public class PlaceDto implements Serializable {
     private String name; //가게 이름
     private String phone; //가게 전화번호
     private String address; //가게 위치
+
+    /*review에 사용*/
     private String date; //방문 날짜
     private String photoPath; //찍은 사진
     private String memo; //한줄평
     private float rating; //별점
-    private String placeId; //식당 비건 유무
+
+    /*showDetail에 사용*/
+    private String placeId;
     private double lat;
     private double lng;
     private String keyword;
+
 
     public PlaceDto() {
     }

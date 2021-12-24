@@ -34,6 +34,7 @@ import com.google.android.libraries.places.api.net.FetchPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.navigation.NavigationView;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -48,6 +49,8 @@ public class BookmarkDetailActivity extends AppCompatActivity {
     private TextView tvAddress;
     private TextView tvPhone;
     private ImageButton btnCall;
+    private TextView tvOpeningHours;
+    private TextView tvRating;
     private ImageView imageView;
 
     String phone;
@@ -64,6 +67,8 @@ public class BookmarkDetailActivity extends AppCompatActivity {
         tvAddress = findViewById(R.id.tvBmdAddress);
         tvPhone = findViewById(R.id.tvBmdPhone);
         btnCall = findViewById(R.id.btnBmdCall);
+        tvOpeningHours = findViewById(R.id.tvOpeningHours);
+        tvRating = findViewById(R.id.tvRating);
 
         placeDto = new PlaceDto();
 
@@ -97,6 +102,19 @@ public class BookmarkDetailActivity extends AppCompatActivity {
         placeDto.setLng(currentLoc.longitude);
 
         placeDto.setKeyword(intent.getStringExtra("keyword"));
+
+        ArrayList<String> openingList = intent.getStringArrayListExtra("opening_hours");
+        String opening_hours = "";
+        if(opening_hours.equals("no opening_hours") || openingList == null)
+            tvOpeningHours.setText("오픈 정보가 없습니다.");
+        else {
+            for (int i = 0; i < openingList.size(); i++) {
+                opening_hours += openingList.get(i) + "\n";
+            }
+            tvOpeningHours.setText(opening_hours);
+        }
+        String rating = String.valueOf(intent.getDoubleExtra("rating", 0.0));
+        tvRating.setText(rating);
 
         this.settingSideNavBar();
     }

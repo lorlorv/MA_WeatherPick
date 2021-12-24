@@ -42,6 +42,8 @@
         android:text="음식"
         android:textColor="#000000"
         android:textSize="48sp"
+        app:layout_constraintEnd_toStartOf="@+id/textView8"
+        app:layout_constraintHorizontal_bias="0.016"
         app:layout_constraintStart_toEndOf="@+id/textView2"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -118,6 +120,19 @@
         android:textSize="20sp"
         app:layout_constraintStart_toEndOf="@+id/etSearch"
         app:layout_constraintTop_toBottomOf="@+id/tvPickedFood" />
+
+    <Button
+        android:id="@+id/btnCafe"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:backgroundTint="#FFFDE7"
+        android:fontFamily="@font/pretendard_semibold"
+        android:onClick="onClick"
+        android:text="☕CAFE🍮"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/placeMap"
+        app:layout_constraintStart_toStartOf="@+id/placeMap" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

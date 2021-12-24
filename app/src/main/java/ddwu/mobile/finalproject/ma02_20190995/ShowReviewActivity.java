@@ -39,6 +39,7 @@ public class ShowReviewActivity extends AppCompatActivity {
     private String mCurrentPhotoPath;
     PlaceDBHelper showDBHelper;
     PlaceDto infoDto;
+    long data;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +58,7 @@ public class ShowReviewActivity extends AppCompatActivity {
 
 //      ReviewActivity 에서 전달 받은 _id 값을 사용하여 DB 레코드를 가져온 후 ImageView 와 TextView 설정
         Intent intent = getIntent();
-        long data = intent.getLongExtra("Id", 0);
+        data = intent.getLongExtra("Id", 0);
         showDBHelper = new PlaceDBHelper(this);
         SQLiteDatabase myDB = showDBHelper.getWritableDatabase();
 
@@ -107,6 +108,11 @@ public class ShowReviewActivity extends AppCompatActivity {
         switch(v.getId()) {
             case R.id.btnGoList:
                 finish();
+                break;
+            case R.id.btnUpdate:
+                Intent intent = new Intent(ShowReviewActivity.this, UpdateReviewActivity.class);
+                intent.putExtra("id", data);
+                startActivity(intent);
                 break;
         }
     }

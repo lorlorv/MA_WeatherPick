@@ -78,6 +78,7 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
     /*Map*/
     private GoogleMap mGoogleMap;
     private MarkerOptions markerOptions;
+    private MarkerOptions cafeMarkerOptions;
     private Map<String, Marker> markerMap;
     private ArrayList<String> placeList;
 
@@ -87,7 +88,6 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
     public static Context mContext;
 
     /*Adapter*/
-    CafeListAdapter adapter;
     ArrayList<CafeDto> resultList;
     ListView lvList;
 
@@ -134,6 +134,7 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
         mGoogleMap = googleMap;
         //지도가 준비되었을 때 marker도 준비!
         markerOptions = new MarkerOptions();
+        cafeMarkerOptions = new MarkerOptions();
         Log.d(TAG, "Map Ready");
 
         mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLoc, 15));
@@ -250,7 +251,7 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
         List<Place.Field> placeFields = Arrays.asList(Place.Field.ID,
                 Place.Field.NAME, Place.Field.OPENING_HOURS,
                 Place.Field.PHONE_NUMBER, Place.Field.ADDRESS,
-                Place.Field.RATING, Place.Field.USER_RATINGS_TOTAL, Place.Field.WEBSITE_URI);
+                Place.Field.RATING);
 
         FetchPlaceRequest request = FetchPlaceRequest.builder(placeId, placeFields).build();
 
@@ -274,17 +275,24 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
 
     private void callDetailActivity(Place place) {
         Intent intent = new Intent(PlaceActivity.this, DetailActivity.class);
-        intent.putExtra("id", place.getId()) //photo 가져오기 위함
-                .putExtra("name",place.getName())
-                .putExtra("address",place.getAddress())
-                .putExtra("phone",place.getPhoneNumber())
-                .putExtra("isOpen", place.isOpen())
-                .putExtra("opening_hours", place.getOpeningHours())
-                .putExtra("rating", place.getRating())
-                .putExtra("user_rating", place.getUserRatingsTotal())
-                .putExtra("website", place.getWebsiteUri())
-                .putExtra("currentLoc", currentLoc)
-                .putExtra("keyword", foodName);
+        intent.putExtra("id", place.getId()); //photo 가져오기 위함
+        intent.putExtra("name",place.getName());
+        intent.putExtra("address",place.getAddress());
+        intent.putExtra("phone",place.getPhoneNumber());
+
+        ArrayList<String> openingList = new ArrayList<>();
+        try{
+            for(int i = 0; i < place.getOpeningHours().getWeekdayText().size(); i++){
+                openingList.add(place.getOpeningHours().getWeekdayText().get(i));
+            }
+            intent.putExtra("opening_hours", openingList);
+        }catch (NullPointerException e){
+            intent.putExtra("opening_hours", "no opening_hours");
+        }
+
+        intent.putExtra("rating", place.getRating());
+        intent.putExtra("currentLoc", currentLoc);
+        intent.putExtra("keyword", foodName);
 
         Log.d("currentLOc : " , String.valueOf(currentLoc.latitude + " , " + currentLoc.longitude));
         Log.d(TAG, foodName);
@@ -294,53 +302,49 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
     }
 
 
-//    /*입력된 유형의 주변 cafe 정보를 검색*/
-//    private void searchCafeStart(String type) {
-////        LatLng currentLoc = ((PlaceActivity)PlaceActivity.mContext).currentLoc;
-//        new NRPlaces.Builder().listener(placesCafeListener)
-//                .key(getResources().getString(R.string.api_key))
-//                .latlng(currentLoc.latitude, currentLoc.longitude)
-//                .radius(500)
-//                .type(type)
-//                .build()
-//                .execute();
-//    }
-//
-//    PlacesListener placesCafeListener = new PlacesListener() {
-//        @Override
-//        public void onPlacesSuccess(final List<noman.googleplaces.Place> places) {
-//            runOnUiThread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    for (noman.googleplaces.Place place : places) {
-//                        resultList = new ArrayList<>();
-//                        CafeDto cafeDto = new CafeDto();
-//                        cafeDto.setName(place.getName());
-//                        resultList.add(cafeDto);
-//                        Log.d(TAG, place.getName() + "  " + place.getPlaceId());
-//                    }
-//                    setListOnAdapter();
-//                }
-//
-//            });
-//
-//
-//        }
-//
-//        @Override
-//        public void onPlacesFailure(PlacesException e) { }
-//        @Override
-//        public void onPlacesStart() { }
-//        @Override
-//        public void onPlacesFinished() { }
-//    };
-//
-//    public void setListOnAdapter(){
-//        adapter.setList(resultList);
-//        for(int i = 0; i < resultList.size(); i++){
-//            Log.d("resultList : " , String.valueOf(resultList.get(i).getName()));
-//        }
-//    }
+    /*입력된 유형의 주변 cafe 정보를 검색*/
+    private void searchCafeStart(String type) {
+//        LatLng currentLoc = ((PlaceActivity)PlaceActivity.mContext).currentLoc;
+        new NRPlaces.Builder().listener(placesCafeListener)
+                .key(getResources().getString(R.string.api_key))
+                .latlng(currentLoc.latitude, currentLoc.longitude)
+                .radius(500)
+                .type(type)
+                .build()
+                .execute();
+    }
+
+    PlacesListener placesCafeListener = new PlacesListener() {
+        @Override
+        public void onPlacesSuccess(final List<noman.googleplaces.Place> places) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                        for(noman.googleplaces.Place place : places){
+                            cafeMarkerOptions.title(place.getName());
+                            cafeMarkerOptions.position(new LatLng(place.getLatitude(),place.getLongitude()));
+                            cafeMarkerOptions.icon(BitmapDescriptorFactory.defaultMarker
+                                    (BitmapDescriptorFactory.HUE_ORANGE));
+
+                            Marker newMarker = mGoogleMap.addMarker(cafeMarkerOptions);
+                            newMarker.setTag(place.getPlaceId());
+                            //markerMap.put(place.getName(), newMarker);
+                            //placeList.add(place.getName());
+                            Log.d(TAG, place.getName() + "  " + place.getPlaceId());
+                        }
+
+                    }
+
+            });
+        }
+
+        @Override
+        public void onPlacesFailure(PlacesException e) { }
+        @Override
+        public void onPlacesStart() { }
+        @Override
+        public void onPlacesFinished() { }
+    };
 
     public void onClick(View v) {
         switch(v.getId()) {
@@ -349,6 +353,7 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
                 break;
             case R.id.btnShare:
                 shareMap();
+                break;
             case R.id.btnSearch:
                 String keyword = etSearch.getText().toString();
                 if(markerMap.containsKey(keyword)) {
@@ -361,6 +366,9 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
                 }
                 else
                     Toast.makeText(PlaceActivity.this, "정확한 검색어를 입력해주세요!", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.btnCafe:
+                searchCafeStart(PlaceType.CAFE);
         }
     }
 

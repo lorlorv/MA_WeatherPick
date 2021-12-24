@@ -34,6 +34,7 @@ import com.google.android.libraries.places.api.net.FetchPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.navigation.NavigationView;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -45,8 +46,6 @@ public class DetailActivity extends AppCompatActivity {
     TextView tvPhone;
     TextView tvOpeningHours;
     TextView tvRating;
-    TextView tvUserRating;
-    TextView tvWebsite;
     ImageView imageView;
     ImageButton btnCall;
 
@@ -69,8 +68,6 @@ public class DetailActivity extends AppCompatActivity {
         tvPhone = findViewById(R.id.tvPhone);
         tvOpeningHours = findViewById(R.id.tvOpeningHours);
         tvRating = findViewById(R.id.tvRating);
-//        tvUserRating = findViewById(R.id.tvUserRating);
-//        tvWebsite = findViewById(R.id.tvWebsite);
         imageView = findViewById(R.id.ivPhoto);
         btnCall = findViewById(R.id.btnCall);
 
@@ -94,14 +91,19 @@ public class DetailActivity extends AppCompatActivity {
             tvPhone.setText(phone);
         placeDto.setPhone(phone);
 
-        Boolean isOpen = intent.getBooleanExtra("isOpen", false);
-        if(isOpen == null)
+        ArrayList<String> openingList = intent.getStringArrayListExtra("opening_hours");
+        String opening_hours = "";
+        if(opening_hours.equals("no opening_hours") || openingList == null)
             tvOpeningHours.setText("오픈 정보가 없습니다.");
-        else
-            tvOpeningHours.setText(isOpen.toString());
-//        tvRating.setText(intent.getStringExtra("rating"));
-//        tvUserRating.setText(intent.getStringExtra("user_rating"));
-//        tvWebsite.setText(intent.getStringExtra("website"));
+        else {
+            for (int i = 0; i < openingList.size(); i++) {
+                opening_hours += openingList.get(i) + "\n";
+            }
+            tvOpeningHours.setText(opening_hours);
+        }
+        String rating = String.valueOf(intent.getDoubleExtra("rating", 0.0));
+        tvRating.setText(rating);
+
         //photo_MetaData가져오기
 
         String placeId = intent.getStringExtra("id");
