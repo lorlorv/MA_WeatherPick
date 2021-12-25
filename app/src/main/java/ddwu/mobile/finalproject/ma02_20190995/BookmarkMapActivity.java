@@ -12,6 +12,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -76,11 +78,15 @@ public class BookmarkMapActivity extends AppCompatActivity implements OnMapReady
     /*Map*/
     private GoogleMap mGoogleMap;
     private MarkerOptions markerOptions;
+    private MarkerOptions cafeMarkerOptions;
+    private LatLngResultReceiver latLngResultReceiver;
+    private Marker newMarker;
 
     /*DATA*/
     private PlacesClient placesClient;
     LatLng currentLoc;
     public static Context mContext;
+
 
     /*Adapter*/
     ArrayList<CafeDto> resultList;
@@ -104,6 +110,8 @@ public class BookmarkMapActivity extends AppCompatActivity implements OnMapReady
 
 
         address = placeDto.getAddress();
+        latLngResultReceiver = new LatLngResultReceiver(new Handler());
+
 
         currentLoc = new LatLng(placeDto.getLat(), placeDto.getLng());
         Log.d("currentLOc : " , String.valueOf(currentLoc.latitude + " , " + currentLoc.longitude));
@@ -132,6 +140,7 @@ public class BookmarkMapActivity extends AppCompatActivity implements OnMapReady
         mGoogleMap = googleMap;
         //지도가 준비되었을 때 marker도 준비!
         markerOptions = new MarkerOptions();
+        cafeMarkerOptions = new MarkerOptions();
         Log.d(TAG, "Map Ready");
 
         mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLoc, 15));
@@ -161,6 +170,48 @@ public class BookmarkMapActivity extends AppCompatActivity implements OnMapReady
                 getPlaceDetail(placeId);
             }
         });
+    }
+
+    /* 주소 → 위도/경도 변환 IntentService 실행 */
+    private void startLatLngService() {
+        Intent intent = new Intent(this, FetchLatLngIntentService.class);
+        intent.putExtra(Constants.RECEIVER, latLngResultReceiver);
+        intent.putExtra(Constants.ADDRESS_DATA_EXTRA, address);
+        startService(intent);
+    }
+
+    /* 주소 → 위도/경도 변환 ResultReceiver */
+    class LatLngResultReceiver extends ResultReceiver {
+        public LatLngResultReceiver(Handler handler) {
+            super(handler);
+        }
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            LatLng cafeLoc;
+            ArrayList<LatLng> latLngList = null;
+            if (resultCode == Constants.SUCCESS_RESULT) {
+                if (resultData == null) return;
+                latLngList = (ArrayList<LatLng>) resultData.getSerializable(Constants.RESULT_DATA_KEY);
+                if (latLngList == null) {
+//                    lat = (String) etLat.getHint();
+//                    lng = (String) etLng.getHint();
+                } else {
+                    LatLng latlng = latLngList.get(0);
+                    cafeLoc = latlng;
+                    cafeMarkerOptions.title(placeDto.getName());
+                    cafeMarkerOptions.position(cafeLoc);
+                    cafeMarkerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+
+                    Marker newMarker = mGoogleMap.addMarker(cafeMarkerOptions);
+                    newMarker.setTag(placeDto.getPlaceId());
+                    newMarker.showInfoWindow();
+                }
+
+            } else {
+//                etLat.setText(getString(R.string.no_address_found));
+//                etLng.setText(getString(R.string.no_address_found));
+            }
+        }
     }
 
 
@@ -207,6 +258,7 @@ public class BookmarkMapActivity extends AppCompatActivity implements OnMapReady
     }
 
     PlacesListener placesListener = new PlacesListener() {
+        int count = 0;
         @Override
         public void onPlacesSuccess(final List<noman.googleplaces.Place> places) {
             //마커 추가
@@ -216,14 +268,17 @@ public class BookmarkMapActivity extends AppCompatActivity implements OnMapReady
                     for(noman.googleplaces.Place place : places){
                         markerOptions.title(place.getName());
                         markerOptions.position(new LatLng(place.getLatitude(),place.getLongitude()));
-                        if(place.getPlaceId().equals(placeDto.getPlaceId()))
+                        if(place.getPlaceId().equals(placeDto.getPlaceId())) {
                             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                            count++;
+                        }
                         else
                             markerOptions.icon(BitmapDescriptorFactory.defaultMarker
                                 (BitmapDescriptorFactory.HUE_BLUE));
 
                         Marker newMarker = mGoogleMap.addMarker(markerOptions);
                         newMarker.setTag(place.getPlaceId());
+
                         Log.d(TAG, place.getName() + "  " + place.getPlaceId());
                     }
                 }
@@ -235,7 +290,11 @@ public class BookmarkMapActivity extends AppCompatActivity implements OnMapReady
         @Override
         public void onPlacesStart() { }
         @Override
-        public void onPlacesFinished() { }
+        public void onPlacesFinished() {
+            if(count == 0){
+                startLatLngService();
+            }
+        }
     };
 
     /*Place ID 의 장소에 대한 세부정보 획득*/

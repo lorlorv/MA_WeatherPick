@@ -67,9 +67,12 @@ public class BookmarkActivity extends AppCompatActivity {
                 while(cursor.moveToNext()){
                     placeDto.setId(Long.parseLong(cursor.getString(cursor.getColumnIndex(BookmarkDBHelper.COL_ID))));
                     placeDto.setName(cursor.getString(cursor.getColumnIndex(BookmarkDBHelper.COL_NAME)));
-                    String phone = cursor.getString(cursor.getColumnIndex(BookmarkDBHelper.COL_PHONE));
-                    if(phone.equals(""))
+                    String phone;
+                    try{
+                        phone = cursor.getString(cursor.getColumnIndex(BookmarkDBHelper.COL_PHONE));
+                    }catch(NullPointerException e){
                         phone = "전화번호 정보가 없습니다.";
+                    }
                     placeDto.setPhone(phone);
                     placeDto.setAddress(cursor.getString(cursor.getColumnIndex(BookmarkDBHelper.COL_ADDRESS)));
                     placeDto.setPlaceId(cursor.getString(cursor.getColumnIndex(BookmarkDBHelper.COL_PLACEID)));

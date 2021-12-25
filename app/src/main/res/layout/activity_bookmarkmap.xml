@@ -59,6 +59,7 @@
             android:layout_marginTop="16dp"
             android:fontFamily="@font/pretendard_extrabold"
             android:text="이름"
+            android:textColor="#000000"
             android:textSize="24sp"
             app:layout_constraintStart_toEndOf="@+id/tvBookmarkmap"
             app:layout_constraintTop_toTopOf="@+id/tvBookmarkmap" />
@@ -86,8 +87,8 @@
             android:backgroundTint="#E3F2FD"
             android:fontFamily="@font/pretendard_semibold"
             android:onClick="onClick"
-            android:text="친구에게 공유하기📷"
-            android:textSize="20sp"
+            android:text="친구에게 공유하기📧"
+            android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"

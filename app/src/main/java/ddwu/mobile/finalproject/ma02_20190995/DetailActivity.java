@@ -102,10 +102,12 @@ public class DetailActivity extends AppCompatActivity {
             tvOpeningHours.setText(opening_hours);
         }
         String rating = String.valueOf(intent.getDoubleExtra("rating", 0.0));
-        tvRating.setText(rating);
+        if(rating.equals("no rating info"))
+            tvRating.setText("평점 정보가 없습니다.");
+        else
+            tvRating.setText(rating);
 
         //photo_MetaData가져오기
-
         String placeId = intent.getStringExtra("id");
         getPlaceDetail(placeId);
         placeDto.setPlaceId(placeId);

@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -74,6 +75,7 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
     private TextView tvFoodName;
     String foodName;
     private EditText etSearch;
+    private Button btnCafe;
 
     /*Map*/
     private GoogleMap mGoogleMap;
@@ -86,6 +88,8 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
     private PlacesClient placesClient;
     LatLng currentLoc;
     public static Context mContext;
+    boolean isCafe = false;
+    ArrayList<Marker> cafeMarkerList;
 
     /*Adapter*/
     ArrayList<CafeDto> resultList;
@@ -110,8 +114,11 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
         tvFoodName.setText(foodName);
 //        lvList = findViewById(R.id.lvList);
         etSearch = findViewById(R.id.etSearch);
+        btnCafe = findViewById(R.id.btnCafe);
+
         markerMap = new HashMap<>();
         placeList = new ArrayList<>();
+        cafeMarkerList = new ArrayList<>();
 
         mapLoad();
 
@@ -290,7 +297,12 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
             intent.putExtra("opening_hours", "no opening_hours");
         }
 
-        intent.putExtra("rating", place.getRating());
+        try {
+            intent.putExtra("rating", place.getRating());
+        }catch (NullPointerException e){
+            intent.putExtra("rating", "no rating info");
+        }
+
         intent.putExtra("currentLoc", currentLoc);
         intent.putExtra("keyword", foodName);
 
@@ -328,8 +340,7 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
 
                             Marker newMarker = mGoogleMap.addMarker(cafeMarkerOptions);
                             newMarker.setTag(place.getPlaceId());
-                            //markerMap.put(place.getName(), newMarker);
-                            //placeList.add(place.getName());
+                            cafeMarkerList.add(newMarker);
                             Log.d(TAG, place.getName() + "  " + place.getPlaceId());
                         }
 
@@ -343,7 +354,7 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
         @Override
         public void onPlacesStart() { }
         @Override
-        public void onPlacesFinished() { }
+        public void onPlacesFinished() { Toast.makeText(PlaceActivity.this, "Cafe 검색 완료!", Toast.LENGTH_SHORT).show();}
     };
 
     public void onClick(View v) {
@@ -368,7 +379,19 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
                     Toast.makeText(PlaceActivity.this, "정확한 검색어를 입력해주세요!", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.btnCafe:
-                searchCafeStart(PlaceType.CAFE);
+                if(!isCafe) {
+                    btnCafe.setText("CAFE ON");
+                    searchCafeStart(PlaceType.CAFE);
+                    isCafe = true;
+                }
+                else if(isCafe){
+                    btnCafe.setText("CAFE OFF");
+                    for(int i = 0; i < cafeMarkerList.size(); i++){
+                        cafeMarkerList.get(i).remove();
+                    }
+                    isCafe = false;
+                }
+                break;
         }
     }
 
