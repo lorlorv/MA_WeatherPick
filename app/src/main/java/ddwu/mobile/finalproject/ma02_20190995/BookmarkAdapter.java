@@ -38,11 +38,16 @@ public class BookmarkAdapter extends CursorAdapter {
         }
 
         holder.tvMarkName.setText(cursor.getString(cursor.getColumnIndex(BookmarkDBHelper.COL_NAME)));
-        if(BookmarkDBHelper.COL_PHONE == null){
+        boolean isPhone = true;
+        try{
+            cursor.getString(cursor.getColumnIndex(BookmarkDBHelper.COL_PHONE));
+        }catch (NullPointerException e){
             holder.tvMarkPhone.setText("전화번호 정보가 없습니다!");
+            isPhone = false;
         }
-        else
+        if(isPhone)
             holder.tvMarkPhone.setText(cursor.getString(cursor.getColumnIndex(BookmarkDBHelper.COL_PHONE)));
+
         holder.tvMarkAddress.setText(cursor.getString(cursor.getColumnIndex(BookmarkDBHelper.COL_ADDRESS)));
     }
 

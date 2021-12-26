@@ -49,7 +49,7 @@ public class PickActivity extends AppCompatActivity {
         this.settingSideNavBar();
     }
     public void pick() {
-        winter_food = new String[]{"탕", "찜", "우동", "찌개", "짬뽕", "국밥", "샤브샤브", "마라탕", "칼국수", "훠궈", "쌀국수"};
+        winter_food = new String[]{"탕", "찜", "우동", "찌개", "짬뽕", "국밥", "샤브샤브", "마라탕", "칼국수", "쌀국수"};
         rain_food = new String[]{"삼겹살", "우동", "칼국수", "파전", "수제비", "빈대떡", "탕", "소주", "맥주", "막걸리"};
         summer_food = new String[]{"냉면", "삼계탕", "장어", "국수"};
         normal_food = new String[]{"떡볶이", "피자", "햄버거", "돈까스", "초밥", "회", "분식", "파스타", "스테이크", "죽", "샐러드"};
@@ -190,7 +190,9 @@ public class PickActivity extends AppCompatActivity {
                         .setPositiveButton(R.string.dialog_exit, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                finish();
+                                moveTaskToBack(true); // 태스크를 백그라운드로 이동
+                                finishAndRemoveTask(); // 액티비티 종료 + 태스크 리스트에서 지우기
+                                android.os.Process.killProcess(android.os.Process.myPid()); // 앱 프로세스 종료
                             }
                         })
                         .setNegativeButton(R.string.dialog_cancel, null)

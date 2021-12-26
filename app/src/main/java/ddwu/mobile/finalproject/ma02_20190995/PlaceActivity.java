@@ -90,6 +90,7 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
     public static Context mContext;
     boolean isCafe = false;
     ArrayList<Marker> cafeMarkerList;
+//    int count = 0;
 
     /*Adapter*/
     ArrayList<CafeDto> resultList;
@@ -223,10 +224,12 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
     }
 
     PlacesListener placesListener = new PlacesListener() {
+        int count = 0;
         @Override
         public void onPlacesSuccess(final List<noman.googleplaces.Place> places) {
             //마커 추가
             runOnUiThread(new Runnable() {
+
                 @Override
                 public void run() {
                     for(noman.googleplaces.Place place : places){
@@ -240,17 +243,22 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
                         markerMap.put(place.getName(), newMarker);
                         placeList.add(place.getName());
                         Log.d(TAG, place.getName() + "  " + place.getPlaceId());
+                        count++;
                     }
                 }
             });
         }
 
         @Override
-        public void onPlacesFailure(PlacesException e) { }
+        public void onPlacesFailure(PlacesException e) {
+        }
         @Override
         public void onPlacesStart() { }
         @Override
-        public void onPlacesFinished() { }
+        public void onPlacesFinished() {
+            if(count == 0 )
+                Toast.makeText(PlaceActivity.this, "주변에 해당 장소가 없습니다!", Toast.LENGTH_SHORT).show();
+        }
     };
 
     /*Place ID 의 장소에 대한 세부정보 획득*/
@@ -306,10 +314,6 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
         intent.putExtra("currentLoc", currentLoc);
         intent.putExtra("keyword", foodName);
 
-        Log.d("currentLOc : " , String.valueOf(currentLoc.latitude + " , " + currentLoc.longitude));
-        Log.d(TAG, foodName);
-
-
         startActivity(intent);
     }
 
@@ -327,6 +331,7 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
     }
 
     PlacesListener placesCafeListener = new PlacesListener() {
+        int count = 0;
         @Override
         public void onPlacesSuccess(final List<noman.googleplaces.Place> places) {
             runOnUiThread(new Runnable() {
@@ -342,6 +347,7 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
                             newMarker.setTag(place.getPlaceId());
                             cafeMarkerList.add(newMarker);
                             Log.d(TAG, place.getName() + "  " + place.getPlaceId());
+                            count++;
                         }
 
                     }
@@ -354,7 +360,11 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
         @Override
         public void onPlacesStart() { }
         @Override
-        public void onPlacesFinished() { Toast.makeText(PlaceActivity.this, "Cafe 검색 완료!", Toast.LENGTH_SHORT).show();}
+        public void onPlacesFinished() {
+            if(count == 0)
+                Toast.makeText(PlaceActivity.this, "주변에 해당 장소가 없습니다!", Toast.LENGTH_SHORT).show();
+            else
+                Toast.makeText(PlaceActivity.this, "Cafe 검색 완료!", Toast.LENGTH_SHORT).show();}
     };
 
     public void onClick(View v) {
@@ -403,7 +413,6 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
             ex.printStackTrace();
         }
         takeCaptureMap();
-        //문자 발송
         if (mCurrentPhotoPath != null) {
                 Uri uri;
                 if (Build.VERSION.SDK_INT < 24) { //nougat 전 버전
@@ -414,6 +423,7 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
                             photoFile);
                 }
 
+                //문자 발송
                 String text = "오늘 이거 어때?";
                 try {
                     Intent intent = new Intent(Intent.ACTION_SEND);
@@ -427,14 +437,13 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
                 }
         }
     }
-
+    //Map Capture
     public void takeCaptureMap() {
         GoogleMap.SnapshotReadyCallback snapshotReadyCallback = new GoogleMap.SnapshotReadyCallback() {
             @Override
             public void onSnapshotReady(Bitmap bitmap) {
                 try {
                     FileOutputStream fos = null;
-
                     fos = new FileOutputStream(mCurrentPhotoPath);
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
                     sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file:/" + mCurrentPhotoPath)));
@@ -548,7 +557,9 @@ public class PlaceActivity extends AppCompatActivity implements OnMapReadyCallba
                         .setPositiveButton(R.string.dialog_exit, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                finish();
+                                moveTaskToBack(true); // 태스크를 백그라운드로 이동
+                                finishAndRemoveTask(); // 액티비티 종료 + 태스크 리스트에서 지우기
+                                android.os.Process.killProcess(android.os.Process.myPid()); // 앱 프로세스 종료
                             }
                         })
                         .setNegativeButton(R.string.dialog_cancel, null)

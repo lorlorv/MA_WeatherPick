@@ -9,7 +9,7 @@
         android:id="@+id/tvReviewListName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
+        android:layout_marginStart="112dp"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/pretendard_semibold"
         android:text="TextView"
@@ -36,5 +36,14 @@
         android:text="TextView"
         app:layout_constraintStart_toStartOf="@+id/tvReviewListName"
         app:layout_constraintTop_toBottomOf="@+id/tvReviewListName" />
+
+    <ImageView
+        android:id="@+id/ivReviewList"
+        android:layout_width="102dp"
+        android:layout_height="107dp"
+        android:layout_marginStart="3dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tvReviewListName"
+        tools:srcCompat="@tools:sample/avatars" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

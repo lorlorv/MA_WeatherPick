@@ -34,16 +34,16 @@
 
     <TextView
         android:id="@+id/tvPickedFood"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
         android:layout_marginTop="56dp"
         android:fontFamily="@font/pretendard_extrabold"
+        android:gravity="center"
         android:text="음식"
         android:textColor="#000000"
         android:textSize="48sp"
         app:layout_constraintEnd_toStartOf="@+id/textView8"
-        app:layout_constraintHorizontal_bias="0.016"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/textView2"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -103,12 +103,13 @@
         android:id="@+id/etSearch"
         android:layout_width="233dp"
         android:layout_height="46dp"
+        android:layout_marginTop="16dp"
         android:ems="10"
         android:fontFamily="@font/pretendard_medium"
         android:hint="상호명을 입력해주세요"
         android:inputType="textPersonName"
         app:layout_constraintStart_toStartOf="@+id/textView2"
-        app:layout_constraintTop_toBottomOf="@+id/tvPickedFood" />
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
     <Button
         android:id="@+id/btnSearch"

@@ -54,6 +54,7 @@ public class UpdateReviewActivity extends AppCompatActivity {
     PlaceDto updateDto;
     float ratingNum;
     long id;
+    String originRating = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,13 +105,20 @@ public class UpdateReviewActivity extends AppCompatActivity {
         tvAddress.setText(address);
         etDate.setText(date);
         mCurrentPhotoPath = path;
-        if(mCurrentPhotoPath.equals("")){
+        boolean isPath  = true;
+        try{
+            if(mCurrentPhotoPath.equals("")){
+                ivPhoto.setImageResource(R.mipmap.image);
+            }
+        }catch (NullPointerException e){
             ivPhoto.setImageResource(R.mipmap.image);
+            isPath = false;
         }
-        else
+        if(isPath)
             setPic();
         etMemo.setText(memo);
         ratingbar.setRating(Float.parseFloat(rating));
+        originRating = (rating);
 
         cursor.close();
 
@@ -201,6 +209,8 @@ public class UpdateReviewActivity extends AppCompatActivity {
                     memo = "memo 정보가 없습니다.";
                 }
                 updateDto.setMemo(memo);
+                if(ratingNum == 0.0)
+                    ratingNum = Float.parseFloat(originRating);
                 updateDto.setRating(ratingNum);
 
                 updateDBManager = new PlaceDBManager(this);
@@ -325,7 +335,9 @@ public class UpdateReviewActivity extends AppCompatActivity {
                         .setPositiveButton(R.string.dialog_exit, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                finish();
+                                moveTaskToBack(true); // 태스크를 백그라운드로 이동
+                                finishAndRemoveTask(); // 액티비티 종료 + 태스크 리스트에서 지우기
+                                android.os.Process.killProcess(android.os.Process.myPid()); // 앱 프로세스 종료
                             }
                         })
                         .setNegativeButton(R.string.dialog_cancel, null)

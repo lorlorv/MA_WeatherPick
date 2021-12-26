@@ -80,7 +80,16 @@ public class AddReviewActivity extends AppCompatActivity {
         name = infoDto.getName();
         tvName.setText(name);
         phone = infoDto.getPhone();
-        tvPhone.setText(phone);
+        boolean isPhone = true;
+        try{
+            if(phone.equals(""))
+                tvPhone.setText("전화번호 정보가 없습니다.");
+        }catch (NullPointerException e){
+            tvPhone.setText("전화번호 정보가 없습니다.");
+            isPhone = false;
+        }
+        if (isPhone)
+            tvPhone.setText(phone);
         address = infoDto.getAddress();
         tvAddress.setText(address);
         etPhoto.setImageResource(R.mipmap.image);
@@ -194,7 +203,16 @@ public class AddReviewActivity extends AppCompatActivity {
                 date = tDate;
                 }
                 reviewDto.setDate(date);
-                reviewDto.setPhotoPath(mCurrentPhotoPath);
+
+                try{
+                    if(mCurrentPhotoPath.equals("") || mCurrentPhotoPath == null)
+                        mCurrentPhotoPath = "";
+                }catch (NullPointerException e){
+                   reviewDto.setPhotoPath("");
+                }finally {
+                    reviewDto.setPhotoPath(mCurrentPhotoPath);
+                }
+
                 if(memo.equals("")){
                     memo = "memo 정보가 없습니다.";
                 }
@@ -297,7 +315,9 @@ public class AddReviewActivity extends AppCompatActivity {
                         .setPositiveButton(R.string.dialog_exit, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                finish();
+                                moveTaskToBack(true); // 태스크를 백그라운드로 이동
+                                finishAndRemoveTask(); // 액티비티 종료 + 태스크 리스트에서 지우기
+                                android.os.Process.killProcess(android.os.Process.myPid()); // 앱 프로세스 종료
                             }
                         })
                         .setNegativeButton(R.string.dialog_cancel, null)
