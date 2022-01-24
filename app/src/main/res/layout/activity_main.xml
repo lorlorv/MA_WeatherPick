@@ -1,10 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:backgroundTint="#000000"
+    android:orientation="vertical"
+    android:background="#FFFFFFFF"
+    android:id="@+id/drawer_layout"
+    tools:context=".MainActivity">
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     tools:context=".MainActivity">
 
     <fragment
@@ -13,11 +22,10 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="250dp"
+        android:layout_marginTop="270dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="100dp"
         app:cameraTargetLat="@string/init_lat"
-
         app:cameraTargetLng="@string/init_lng"
         app:cameraZoom="17"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -32,14 +40,12 @@
         android:id="@+id/tvMainTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="133dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="220dp"
+        android:layout_marginStart="68dp"
+        android:layout_marginTop="72dp"
         android:fontFamily="@font/pretendard_extrabold"
         android:text="지금 여기는?"
+        android:textColor="#000000"
         android:textSize="48sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.267"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -47,8 +53,7 @@
         android:id="@+id/tvCurAddr"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="52dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginStart="8dp"
         android:fontFamily="@font/pretendard_regular"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -59,7 +64,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:fontFamily="@font/pretendard_regular"
         android:text="다른 위치"
         android:textSize="20sp"
@@ -70,8 +75,7 @@
         android:id="@+id/etOtherLoc"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:ems="10"
         android:fontFamily="@font/pretendard_regular"
@@ -79,6 +83,7 @@
         android:inputType="textPersonName"
         android:minHeight="48dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/tvOther"
         app:layout_constraintTop_toBottomOf="@+id/tvCurAddr" />
 
@@ -86,7 +91,7 @@
         android:id="@+id/btnOtherLoc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="#90CAF9"
+        android:backgroundTint="#E3F2FD"
         android:fontFamily="@font/pretendard_extrabold"
         android:onClick="onClick"
         android:text="OK"
@@ -101,7 +106,7 @@
         android:layout_marginStart="124dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="124dp"
-        android:backgroundTint="#7986CB"
+        android:backgroundTint="#E0F2F1"
         android:fontFamily="@font/pretendard_black"
         android:onClick="onClick"
         android:text="이 곳입니다!"
@@ -112,3 +117,18 @@
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <include
+        layout="@layout/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/header"
+        app:menu="@menu/drawer_layout" />
+</androidx.drawerlayout.widget.DrawerLayout>

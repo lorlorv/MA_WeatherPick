@@ -1,105 +1,143 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#FFFFFFFF"
+    android:orientation="vertical"
+    tools:context=".MainActivity"
+    tools:layout_editor_absoluteX="-1dp"
+    tools:layout_editor_absoluteY="-200dp">
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:rotationX="0">
+
+
+    <TextView
+        android:id="@+id/tvTemperature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:fontFamily="@font/pretendard_black"
+        android:text="℃"
+        android:textColor="#7C7C7C"
+        android:textSize="60sp"
+        app:layout_constraintStart_toEndOf="@+id/tvTmp"
+        app:layout_constraintTop_toTopOf="@+id/tvTmp" />
+
+    <TextView
+        android:id="@+id/tvTmp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="72dp"
+        android:layout_marginTop="44dp"
+        android:fontFamily="@font/pretendard_black"
+        android:text="11"
+        android:textColor="#000000"
+        android:textSize="60sp"
+        app:layout_constraintStart_toStartOf="@+id/tvCurrentLoc"
+        app:layout_constraintTop_toBottomOf="@+id/tvCurrentLoc" />
+
+    <TextView
+        android:id="@+id/tvW3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="180dp"
+        android:text="오늘의 날씨"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="@+id/tvCurrentLoc"
+        app:layout_constraintTop_toBottomOf="@+id/tvCurrentLoc" />
+
+    <TextView
+        android:id="@+id/tvWeather"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="28dp"
+        android:fontFamily="@font/pretendard_regular"
+        android:text="비"
+        android:textColor="#000000"
+        android:textSize="48sp"
+        app:layout_constraintStart_toEndOf="@+id/tvW3"
+        app:layout_constraintTop_toBottomOf="@+id/tvTemperature" />
 
     <TextView
         android:id="@+id/tvCurrentLoc"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="35dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
         android:fontFamily="@font/pretendard_regular"
         android:text="현재 위치 주소"
+        android:textColor="#000000"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView19" />
+
+    <Button
+        android:id="@+id/btnStart"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="270dp"
+        android:layout_marginEnd="32dp"
+        android:height="100dp"
+        android:backgroundTint="#E3F2FD"
+        android:fontFamily="@font/pretendard_extrabold"
+        android:onClick="onClick"
+        android:text="🍽 오늘 같은 날엔? 🍽 "
+        android:textSize="26sp"
+        app:cornerRadius="80px"
+        app:layout_constraintEnd_toEndOf="@+id/tvCurrentLoc"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvCurrentLoc" />
+
+    <TextView
+        android:id="@+id/textView19"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="80dp"
+        android:fontFamily="@font/pretendard_semibold"
+        android:text="현재위치👉"
+        android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tvTmp"
-        app:layout_constraintStart_toStartOf="@+id/tvCurrentLoc"
-        app:layout_constraintTop_toBottomOf="@+id/tvCurrentLoc"
+        android:id="@+id/IconWeather"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/pretendard_black"
-        android:text="11 °C"
-        android:textSize="60sp"
-        tools:layout_editor_absoluteX="134dp"
-        tools:layout_editor_absoluteY="90dp" />
-
-    <TextView
-        android:id="@+id/tvRainPer"
-        app:layout_constraintStart_toStartOf="@+id/tvCurrentLoc"
-        app:layout_constraintTop_toBottomOf="@+id/tvTmp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/pretendard_regular"
-        android:text="강수확률 : 70%"
-        android:textSize="24sp"
-        tools:layout_editor_absoluteX="132dp"
-        tools:layout_editor_absoluteY="211dp" />
-
-    <TextView
-        android:id="@+id/tvDust"
-        app:layout_constraintStart_toStartOf="@+id/tvCurrentLoc"
-        app:layout_constraintTop_toBottomOf="@+id/tvRainPer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/pretendard_medium"
-        android:text="미세먼지 좋음/보통/나쁨"
-        android:textSize="24sp"
-        tools:layout_editor_absoluteX="91dp"
-        tools:layout_editor_absoluteY="266dp" />
-
-
-
-    <Button
-        android:id="@+id/btnStart"
-        app:cornerRadius="80px"
-        app:layout_constraintEnd_toEndOf="@+id/tvCurrentLoc"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/tvCurrentLoc"
-        app:layout_constraintTop_toBottomOf="@+id/etOtherLoc"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:height="100dp"
-        android:backgroundTint="#42A5F5"
-        android:fontFamily="@font/pretendard_extrabold"
-        android:text="🍽 오늘 같은 날엔? 🍽 "
-        android:textSize="30sp"
-        tools:layout_editor_absoluteX="35dp"
-        tools:layout_editor_absoluteY="505dp" />
-
-    <Button
-        android:id="@+id/btnOtherLoc"
-        app:layout_constraintEnd_toEndOf="@+id/etOtherLoc"
-        app:layout_constraintTop_toBottomOf="@+id/etOtherLoc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="#90CAF9"
-        android:fontFamily="@font/pretendard_extrabold"
-        android:onClick="onClick"
-        android:text="OK"
-        android:textSize="20sp"
-        tools:layout_editor_absoluteX="293dp"
-        tools:layout_editor_absoluteY="341dp" />
-
-    <Button
-        android:id="@+id/btnCurLoc"
-        app:layout_constraintEnd_toEndOf="@+id/tvCurrentLoc"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/tvCurrentLoc"
-        app:layout_constraintTop_toBottomOf="@+id/tvCurrentLoc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="#C9E7FF"
-        android:onClick="onClick"
-        android:text="🚩"
-        android:textSize="24sp"
-        tools:layout_editor_absoluteX="250dp"
-        tools:layout_editor_absoluteY="389dp" />
+        android:layout_marginStart="12dp"
+        android:text="🌧"
+        android:textSize="48sp"
+        app:layout_constraintStart_toEndOf="@+id/tvWeather"
+        app:layout_constraintTop_toTopOf="@+id/tvWeather" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+<include
+layout="@layout/appbar"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:layout_editor_absoluteX="-1dp"
+tools:layout_editor_absoluteY="-200dp" />
+
+<com.google.android.material.navigation.NavigationView
+android:id="@+id/nav_view"
+android:layout_width="wrap_content"
+android:layout_height="match_parent"
+android:layout_gravity="start"
+android:fitsSystemWindows="true"
+app:headerLayout="@layout/header"
+app:menu="@menu/drawer_layout"
+tools:layout_editor_absoluteX="-1dp"
+tools:layout_editor_absoluteY="-200dp" />
+    </androidx.drawerlayout.widget.DrawerLayout>

@@ -20,8 +20,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -29,6 +33,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 
@@ -38,12 +43,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     /*Layout*/
     private TextView tvCurrentAddr;
     private EditText etOtherLoc;
-    private double currentLat;
-    private double currentLng;
+    private LatLng currentLoc;
+    private String currentAddress;
     private MarkerOptions markerOptions;
 
     private int clickedButton; /*버튼을 눌렀을 때 권한요청으로 실행이 넘어갈 경우를 대비해 클릭한 버튼 기억*/
-
 
     /*GoogleMap*/
     private GoogleMap mGoogleMap;
@@ -68,10 +72,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         bestProvider = LocationManager.GPS_PROVIDER;
         mapLoad();
 
-
         //IntentService가 생성하는 결과 수신용 ResultReceiver
         addressResultReceiver = new AddressResultReceiver(new Handler());
         latLngResultReceiver = new LatLngResultReceiver(new Handler());
+
+        this.settingSideNavBar();
     }
 
     public void onClick(View v) {
@@ -82,10 +87,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 break;
 
             case R.id.btnSelectLoc:
-                Intent intent = new Intent(this, WeatherActivity.class);
-                intent.putExtra("currentLat", currentLat);
-                intent.putExtra("currentLng", currentLng);
-                startActivity(intent);
+                if(!tvCurrentAddr.getText().toString().equals("")) {
+                    Intent intent = new Intent(this, WeatherActivity.class);
+                    intent.putExtra("currentLoc", currentLoc);
+                    intent.putExtra("currentAddr", currentAddress);
+                    startActivity(intent);
+                }
+                else
+                    Toast.makeText(this, "현재위치를 설정해주세요!", Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -178,20 +187,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         Toast.LENGTH_SHORT).show();
             }
         });
-//        mGoogleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-//            @Override
-//            public void onInfoWindowClick(Marker marker) {
-//                String placeId = marker.getTag().toString();
-//                getPlaceDetail(placeId);
-//            }
-//        });
     }
 
     /* 위도/경도 → 주소 변환 IntentService 실행 */
     private void startAddressService(double latitude, double longitude) {
         Intent intent = new Intent(this, FetchAddressIntentService.class);
-        currentLat = latitude;
-        currentLng = longitude;
+        currentLoc = new LatLng(latitude, longitude);
         intent.putExtra(Constants.RECEIVER, addressResultReceiver); //결과를 수신할 receiver
         intent.putExtra(Constants.LAT_DATA_EXTRA, latitude);
         intent.putExtra(Constants.LNG_DATA_EXTRA, longitude);
@@ -223,6 +224,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 addressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
                 if (addressOutput == null) addressOutput = "";
             }
+                currentAddress = addressOutput;
                 tvCurrentAddr.setText(addressOutput);
             }
         }
@@ -264,13 +266,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public boolean onOptionsItemSelected( MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.item01: //즐겨찾기 리스트
-
-            case R.id.item02: //리뷰 리스트
-
-            case R.id.item03: //앱 소개
-
-            case R.id.item04: //앱 종료
+            case R.id.item01: //앱 종료
                 AlertDialog.Builder  builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setTitle(R.string.dialog_exit)
                         .setMessage("앱을 종료하시겠습니까?")
@@ -278,7 +274,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         .setPositiveButton(R.string.dialog_exit, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                finish();
+                                moveTaskToBack(true); // 태스크를 백그라운드로 이동
+                                finishAndRemoveTask(); // 액티비티 종료 + 태스크 리스트에서 지우기
+                                android.os.Process.killProcess(android.os.Process.myPid()); // 앱 프로세스 종료
                             }
                         })
                         .setNegativeButton(R.string.dialog_cancel, null)
@@ -287,5 +285,62 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 break;
         }
         return true;
+    }
+
+    public void settingSideNavBar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_dehaze_48);
+
+        DrawerLayout drawLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(
+                MainActivity.this,
+                drawLayout,
+                toolbar,
+                R.string.open,
+                R.string.close
+        );
+
+        drawLayout.addDrawerListener(actionBarDrawerToggle);
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+
+                int id = menuItem.getItemId();
+
+                if (id == R.id.menu_item1){
+                    Toast.makeText(getApplicationContext(), "이 곳에서 위치를 다시 설정할 수 있습니다.", Toast.LENGTH_SHORT).show();
+                }else if(id == R.id.menu_item2){
+                    Intent intent = new Intent(MainActivity.this, BookmarkActivity.class);
+                    startActivity(intent);
+                    Toast.makeText(getApplicationContext(), "즐겨찾기!", Toast.LENGTH_SHORT).show();
+                }else if(id == R.id.menu_item3){
+                    Intent intent = new Intent(MainActivity.this, ReviewActivity.class);
+                    startActivity(intent);
+                    Toast.makeText(getApplicationContext(), "Review!", Toast.LENGTH_SHORT).show();
+                }
+
+                DrawerLayout drawer = findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
+                return true;
+            }
+        });
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 }

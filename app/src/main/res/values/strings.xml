@@ -4,10 +4,15 @@
     <string name="dialog_exit">종료</string>
     <string name="dialog_cancel">취소</string>
 
+    <!-- 공공 데이터 API - 날씨 -->
+    <string name="api_url">http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst</string>
+    <string name="open_api_key">lCXnaymyq9YqELE3gY3QPZrG2ZC4LxwL4ai0cnaxQ71ya9LYKqjby%2FeUSTUS9QN2QJ4T0lH5oio%2FDrNlJ95yTA%3D%3D</string>
+
     <!-- map -->
     <string name="api_key">AIzaSyBtKo4aAEKeI4hLmt5ZuO7l0CT8d4YPuno</string>
-    <string name="init_lat">37.604094</string>
-    <string name="init_lng">127.042463</string>
+    <!-- 동덕여자대학교 경도 위도 -->
+    <string name="init_lat">37.6063200</string>
+    <string name="init_lng">127.0418080</string>
 
     <!-- geoCoding -->
     <string name="hello_world">Hello world!</string>
@@ -16,4 +21,11 @@
 
 
     <!-- MainActivity -->
+    <string name="open">open</string>
+    <string name="close">close</string>
+
+    <!-- Alarm -->
+    <string name="channel_name">My Channel</string>
+    <string name="channel_description">Weather Channel</string>
+    <string name="CHANNEL_ID">Weather Channel</string>
 </resources>
