@@ -1,3 +1,4 @@
+![weatherpick_notion](https://user-images.githubusercontent.com/78305392/151707943-0419367a-64dc-4fe5-802b-00420eb7ebde.JPG)
 # WeatherPick☁
 ### 사용자의 주변 또는 원하는 장소의 날씨를 체크할 수 있으며 <br> 날씨에 알맞은 메뉴를 랜덤으로 추천하여 식당/카페에 대한 지도와 정보를 제공하는 서비스
 1. 지금 여기, 아니면 친구가 있는 저기! **날씨가 궁금**하지 않나요?
@@ -35,7 +36,8 @@
 <br>
 
 ## 프로젝트 예시 
-
+![wp1](https://user-images.githubusercontent.com/78305392/151708311-c00976ab-bee7-4a33-8fbb-2982b4af772e.JPG)
+![wp2](https://user-images.githubusercontent.com/78305392/151708329-b63e100c-7cde-4316-91dd-6603840d58bc.JPG)
 <br>
 
 ## 프로젝트 회고록
