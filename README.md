@@ -42,3 +42,6 @@
 
 ## 프로젝트 회고록
 * `notion` : <https://lorlorv.notion.site/WeatherPick-32b9856e1221435f802f8a9eac8854ba/>
+
+## 프로젝트 실행
+* 실제 프로젝트 실행 시 공공데이터 api key와 Google map api key가 필요합니다!
